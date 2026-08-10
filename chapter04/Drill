@@ -1,0 +1,103 @@
+/*
+[1] Cout << "Success!\n"; 
+    Cout 'C' is case-sensitive and shoule be lowercase 'cout'
+
+[2] cout << "Success!\n; 
+    Missing closing quote for the string '"'.
+
+[3] cout << "Success" << !\n" 
+    Missing opening quote for the string '"'.
+
+[4] cout << success << ’\n’;    
+    missing quotes for string leateral "success" and incorrect single quotes for newline character. 
+    It should be cout << "Success" << "\n";
+
+[5] string res = 7; 
+    vector<int> v(10); 
+    v[5] = res; 
+    cout << "Success!\n";
+
+    v[5] = res; is not correct, as it should be v[5] = 7; since res is a string and v[5] is an int. 
+    The correct code should be: string res = "7";
+    
+[6] vector<int> v(10); v(5) = 7; if (v(5)!=7) cout << "Success!\n"; 
+    To access an element in a vector, one should use square brackets instead of parentheses. 
+    The correct code should be: v[5] = 7; if (v[5]!=7) cout << "Success!\n";
+
+[7] if (cond) cout << "Success!\n"; else cout << "Fail!\n"; 
+    cond is not defined in the code snippet. It should be a boolean variable or expression that 
+    evaluates to true or false. For example, you could define cond as: bool cond = true; 
+    if (cond) cout << "Success!\n"; else cout << "Fail!\n";
+
+[8] bool c = false; if (c) cout << "Success!\n"; else cout << "Fail!\n"; 
+    This code is correct and will output "Fail!" since c is false. 
+
+[9] string s = "ape"; bool c = "fool"<s; if (c) cout << "Success!\n"; 
+    This code is correct and will output "Success!" since "fool" is lexicographically less than "ape".
+
+[10] string s = "ape"; if (s=="fool") cout << "Success!\n";
+    it is correct, but the
+    else case is missing. It should be: else cout << "Fail!\n"; 
+    if you want to handle the case when s is not equal to "fool".
+
+ [11] string s = "ape"; if (s=="fool") cout < "Success!\n"; 
+    It is correct, but the else case is missing.
+
+ [12] string s = "ape"; if (s+"fool") cout < "Success!\n"; 
+    The operator '+' is not valid for comparing strings in this context. 
+    You should use the '==' operator to compare strings. 
+    The correct code should be: if (s == "fool") cout << "Success!\n"; else cout << "Fail!\n";
+ 
+
+ [13] vector<char> v(5); for (int i = 0; 0<v.size(); ++i) ; cout << "Success!\n"; 
+    The loop condition is incorrect. It should be 'i < v.size()' instead of '0 < v.size()'.
+ 
+ [14] vector<char> v(5); for (int i = 0; i<=v.size(); ++i) ; cout << "Success!\n"; 
+    This code will cause an out-of-bounds access when i equals v.size(). 
+    The loop condition should be 'i < v.size()' instead of 'i <= v.size()'.
+ 
+ [15] string s = "Success!\n"; for (int i = 0; i<6; ++i) cout << s[i]; 
+    This code will output the first 6 characters of the string s, which is "Succes".
+ 
+ [16] if (true) then cout << "Success!\n"; else cout << "Fail!\n"; 
+    then is not a valid keyword in C++. The correct syntax is: 
+    if (true) cout << "Success!\n"; else cout << "Fail!\n";
+ 
+ [17] int x = 2000; char c = x; if (c==2000) cout << "Success!\n"; 
+    The value of x (2000) is too large to fit in a char, which typically has 
+    a range of -128 to 127 or 0 to 255. When you assign x to c, it will result 
+    in an overflow and c will not equal 2000. To fix this, you can use a larger 
+    data type for c, such as int or long. The correct code should be: 
+    int x = 2000; int c = x; if (c==2000) cout << "Success!\n";
+ 
+ [18] string s = "Success!\n"; for (int i = 0; i<10; ++i) cout << s[i];
+    The is correct, but it will output the first 10 characters of the string s,
+ 
+ [19] vector v(5); for (int i = 0; i<=v.size(); ++i) ; cout << "Success!\n"; 
+    This is inccorrect, as it will cause an out-of-bounds access when i equals v.size().
+
+ [20] int i = 0; int j = 9; while (i<10) ++j; if (j<i) cout << "Success!\n"; 
+    This infinite loop will cause the program to hang, as the condition (i<10) is always true 
+    and j is incremented indefinitely.
+
+ [21] int x = 2; double d = 5/(x−2); if (d==2*x+0.5) cout << "Success!\n"; 
+    it will cause a zero division error, as x-2 equals 0. To fix this, you can 
+    change the value of x to be greater than 2, 
+ 
+ [22] string<char> s = "Success!\n"; for (int i = 0; i<=10; ++i) cout << s[i]; 
+    This is incorrect, as string<char> is not a valid type in C++. 
+    You should use std::string instead.
+
+ [23] int i = 0; while (i<10) ++j; if (j<i) cout << "Success!\n"; 
+    j is not defined in the code snippet. You should define j before using it in the while loop.
+ 
+ [24] int x = 4; double d = 5/(x−2); if (d=2*x+0.5) cout << "Success!\n"; 
+    The condition in the if statement is using the assignment operator '=' 
+    instead of the equality operator '=='. 
+    It should be: if (d == 2*x + 0.5) cout << "Success!\n";
+ 
+ [25] cin << "Success!\n";
+    The input stream operator '<<' is used for output, not input. 
+    To read input from the user, you should use the extraction operator '>>'. 
+    The correct code should be: cin >> variable; where variable is a variable to store the input.
+*/
