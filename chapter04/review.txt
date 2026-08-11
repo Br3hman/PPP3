@@ -1,24 +1,298 @@
 [1] Name four major types of errors and briefly define each one.
-    Syntax error
-    Complie-time error
-    Link-time error
-    Run-time error
-    Logical error
+    Syntax error: Code voilates the grammer rules of the language i.e missing ;
+    
+    Complie-time error: Any error the complier catches before programe run, like syntax 
+    or missing data type, undefine function call
 
-[2] What kinds of errors can we ignore in student programs? 
+    Link-time error: The error detected by the linker when combining the object files (calling a 
+    function was not defined or included)
+    
+    Run-time error: Error that occurs during run time like division by zero. 
 
-[3] What guarantees should every completed project offer? 
+    Logical error: When program Complie and Run but doesnt produced the correct result due to 
+    flawed logic implimentation.
+
+[2] What kinds of errors can we ignore in student programs?
+    Hardware failure
+    System software (OS not responding)
+    Termination error: s when a program ends unexpectedly or 
+    abnormally, rather than finishing its normal execution flow.
+
+[3] What guarantees should every completed project offer?
+    1. Should produce the desired results for all the legal inputs.
+    2. Should produce resonable error messages for all the illegal inputs.
+    3. Need not to worry about misbehaving the Hardware.
+    4. Need not to worry about misbehaving the system software
+    5. Should be allowed to be terminate after finding an error.
 
 [4] List three approaches we can take to eliminate errors in programs and produce acceptable software. 
+    1. Orgranize the software to minimise the errors.
+    2. Eliminate most of the errors through debugging and tesing.
+    3. Make sure the remaining errors are not serious.
 
 [5] Why do we hate debugging? 
+    It consuming time, should be avoided by addressing the 
+    error and Orgranize the code to minimise errors.
 
 [6] What is a syntax error? Give five examples. 
+    int s1=area(1,2) //missing ;¨
+    Int s2=area(1,2) // Int is not a data type
+    double int; // datatype name is reserved, cannot be used as varaibel name
+    for (i=0; i<6, i++) // i is not defined, data type is missing
+    int area(1,2); // area returns int is cannot be assign to datatype
 
 [7] What is a type error? Give five examples. 
+    int x0 = arena(7,2); // error: undefine function
+    int x1 = area(7); // error: wrong numbers of arguments
+    int x2 = area("seven",2); //error: 1st argument has wrong type
+    int x2 = area("seven","two"); //error: both arguments has wrong type
+    int x3=area(); //error: missing arguments
+    int x3 = "string"; //invalid conversion from 'const char*' to 'int'
+    std::string str = 123 // error: conversion from 'int' to non-scalar type 'std::string'  
 
-[8] What is a linker error? Give three examples. 
+[8] What is a linker error? Give three examples.
+    -undefine reference: you declare and call a function but never define it.
+    -Missing library: You using a function from external library but forget to link it.
+    -Duplicate definition: The same function or varaibel is defined multiple times.
+        // file1.cpp
+        int area(int w, int h) { return w * h; }
+        // file2.cpp
+        int area(int w, int h) { return w * h; } // linker sees two definitions → error
 
 [9] What is a logic error? Give three examples. 
+    -Geting a negative area value, there must be something wrong as area cannot be negative
+    -Taking sqrt of a negative number which will return an imaginary numbers
+    -Wrong formula, for example area = length + weidth.
 
 [10] List four potential sources of program errors discussed in the text.
+    Poor specification,
+    Incomplete program,
+    Unexpected argument,
+    Unexpected state, and
+    Logical error.
+
+[11] How do you know if a result is plausible? 
+What techniques do you have to answer such questions?
+    We can check if the result make sense with our domain knowledge 
+    and exception, there are few ways we can answer such questions
+    1. Estimation: is a noble art of combining common sense and 
+    some very simple arthmetic applied to a few facts, like 
+    manually compute a rough expected value before running, 
+    if output is wildly different then further investigation needed.
+
+    2. Boundary testing: Test with known edge cases (0, negatives, 
+    very large values) and verify the output makes sense.
+
+    3. Senity checks / assertion: add assert() or if checks to catch impossible
+    values at run time. 
+
+    4. Unit testing: Write small test with known input and output values to check the 
+    correctness of the result.
+
+[12] How do you test if an input operation succeeded? 
+    if(cin) after the cin >>, if it is true then input operation succeeded
+
+
+[13] Compare and contrast having the caller of a function handle a 
+    run-time error vs. having the called function handle the run-time error.
+
+    The fundamental idea is to separate detection of an error (which should
+    be done called function) from the handling of an error (which should 
+    be done in the caller function).
+
+    -Called function handles the error:
+        *the function knows expectly what went wrong (it is closest to the error)
+        *Keep the error handling logic in one place, caller dont need to repeat the check.
+        *But function may not know what is right recovery for every context.
+
+    int area(int len, int wid){
+        if(len <=0 || wid <=0){
+            throw runtime_error("Enter positive value for len and wid")
+        }
+            return len*wid;
+    }
+    
+    -Caller function handles the error:
+        *The caller knows the context, it can decide whether to retry, skip or abort.
+        *More flexible when same function is used in different situations.
+        *But, every caller must remember to check, leading to repeated error checking
+    
+    int area(int len, int wid);
+    
+    int main(){
+        cin >> x;
+        cin >> y;
+
+        if(x<=0 || y<=0){
+            cerr << "Error: Enter positive values\n";
+            return 1;
+        }
+        cout << "Area="<<area(x,y);
+        return 0;
+
+    }
+
+[14] When is throwing an exception preferable to returning an “error value”? 
+    The basic idea is that if a function finds an error that it cannot handle, 
+    and it doesnt return normally, returning an error value might not have 
+    any effect, (e.g., a function returning any possible int can't use -1 as an error).
+    The caller might ignore the a return value. Instead, it throw an expection indicating
+    what went wrong. Any direct of indirect vall can catch the expection, that is, specifiy
+    what to if the called code throw an exception.
+
+[15] When is returning an “error value” preferable to throwing an exception?
+    *When the error is a normal, expected outcome (not truly exceptional), 
+    e.g., returning -1 when a search finds nothing.
+    *The main function can use error value because there 
+    is no caller to handle the exception.
+    *When the caller is right there and will always check, it is a simple and 
+    local a value check is simpler than using try/catch
+    *When performance is critical, exceptions have overhead; error values are faster.
+
+[16] Describe the process of how exceptions are thrown and caught.
+    Thorwing: When a function detects an error it cannot handle, it 
+    uses keyword throw to create an expection object and stop normal 
+    execuation. The runtime then unwinds the call stack, detroying local 
+    variables, until finds a matching catch.
+
+    Catching: Code that might throw is wrapped in a try block. After it, 
+    one or more catch block specifiy what expection type to handle.
+
+    int area(int len, int wid){
+        if(len <=0 || wid <=0){
+            throw runtime_error("Enter positive value for len and wid")
+        }
+            return len*wid;
+    }
+
+    int main(){
+        try{
+            cout<<"area:"<<area(-1,2);
+        }
+        catch(runtime_error& e){
+            crr << e.what() << "\n";
+
+        }
+    }
+
+    1. throw runtime_error("bad input"): creates the exception object and 
+    exits the function immediately.
+    2. The runtime unwinds the stack: exits each function on the call stack, 
+    cleaning up local variables (destructors run).
+
+    3. It searches up the call stack for a try block with a matching catch.
+
+    4. If found: the matching catch block runs.
+    
+    5. If not found: std::terminate() is called and the program aborts.
+
+[17] Why, with a vector called v, is v[v.size()] a range error? What would be the result of calling this? 
+    v[v.size()] is a range error because valid indices are [0,v.size()-1], index size() 
+    is one past the last element, operator[] does not check bounds. It causes undefined 
+    behavior. The result is typically a garbage value or a crash. Use v.at(size()) Instead 
+    if we want to guranteed std::out_of_range execution. 
+
+[18] What is an assertion? 
+    An assertion is a statment that a condition must be true at a specific point 
+    in the programe. if it is false, the program immediately aborts with an error.
+    it is a way to catch bugs early by verifying your assumptiion. 
+    
+    Precondition: There could be used as precondition as comments or tests, or use 
+
+    Function expect(): As arguments expect() takes a function to test and a string 
+    used to report errors:
+
+    bool ordered_positive(int a, int b, int c§){
+        return a>0 && b > a && c > b;
+    }
+
+    int my_complicated_function(int a, int b, int c)
+        // the arguments are positive and a < b < c
+    {
+        expect(ordered_positive(a,b,c),"bad argument for mcf")
+
+    }
+
+    Postcondition: A check on the correctness is called a postcondition.
+    int area(int len, int wid)
+        //the arguments are positive values
+    { 
+        expect([&]{return len > && wid},"bad argument to area()") // it constructs a lambda function that tests len>0 && wid>0 for expect() to call. If that test fails, print the message.
+        int a = len*wid;
+        expect([&]{return a>0},"bad area() result"); // postcondition
+        return a;
+
+    }
+
+
+[19] Define precondition and postcondition; give an example (that is not the area() 
+function from this chapter), preferably a computation that requires a loop. 
+    
+    Precondition: A condition must be true before a function is called
+    There could be used as precondition as comments or tests, for example 
+    check if there is vector size() is greater than 0 means there is an element existed.
+
+    Postcondition: A condition must be true after a function return.
+    for example sum of all elements in a vector is greater than or 
+    equal to the first elemnet in a vector.
+
+    double sum_of_vector(const vector<double>& v){
+        if(v.empty()){ //precondition
+            throw runtime_error("sum_of_vector: vector must not be empty");
+        }
+    double sum{0};
+    for(const double& elm:v){
+        sum+=elm;
+    }
+        if (!(sum >= v[0]))  // basic plausibility check there could -ve values too,
+            throw runtime_error("sum_of_vector: unexpected result");
+
+    return sum;
+
+    }
+[20] When would you not test a precondition? 
+    -when the check is too expensive, verifying if a sorted order of million element vector
+    -When precondition is guarantees by the construction.
+    -in release/production build where performance matters and code has already ben 
+    thoroghly tested. Assertions are often disabled with NDEBUG for this reason.
+
+[21] When would you not test a postcondition? 
+    -when the check is too expensive
+    -when the result is trivially correct by design, a function simply returns 
+    a constant or a direct calculation without branches.
+    - When there is no meaningful invariant to check, some functions have results 
+    that can't be easily validated without repeating the entire computation.
+
+[22] What are the steps in debugging a program? 
+    1. Get the program to complie.
+    2. Get the program to link
+    3. Get the program to do what it is supposed to do.
+
+    Then we basically go through this sequence again and again,
+    and find a cause that created a problem and fix it.
+
+[23] Why does commenting help when debugging? 
+    when a bug appears, comments tell you what the code was supposed to do, 
+    making it easier to spot where the actual behavior diverges from the intention
+
+[24] How does testing differ from debugging? 
+    Debugging: the process of finding and fixing a known error. 
+    You already know something is wrong and you're locating the cause.
+
+    Testing — the process of running the program with known inputs and 
+    expected outputs to check whether it works correctly. 
+    Testing discovers whether bugs exist; debugging fixes them
+
+
+[25] What is a random number? 
+    A random number is a number from a sequence of 
+    numbers where given the previous numbers, 
+    it’s hard (or even impossible) to determine the next.
+
+[26] How do we use random_int() and seed()?
+    These are helper functions from the PPP3 PPP_support.h header (not standard C++).
+    seed(n) — initializes the random number generator with a starting value. 
+    Same seed always produces the same sequence (useful for reproducible testing). 
+    Different seed = different sequence.
+    
+    random_int(min, max): returns a random integer in the range [min, max] inclusive
