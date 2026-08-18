@@ -1,0 +1,249 @@
+[1] What do we mean by "Programming is understanding"?
+Programming understanding means understanding the problem good enough
+to able to solve the problem, debug it and get the required results.
+We can define out understanding as following
+- understanding the problem (analysis): You moust understand what program suppose to solve.
+- understanding the solution/design: You need to work out the algorithm that solve the problem.
+the overall structure for the system, what should be implimented and how they should communcate.
+- understanding your own code (implimentation): Write the code, debug it and test that it 
+does what is supposed to do and understand what your code is doing.
+- understanding failures
+
+[2] The chapter details creation of a calculator program. 
+write a short analysis of what the calculator should be able to do.
+The simple program should take expression compose of numbers and arthmatic 
+operator and return results, such as add, subtract, multiply and divide.
+This program should also understand the grammer of tight rules, like multiplication 
+and division needs to performed before subtract or add their results.
+
+[3] How do you break a problem up into smaller manageable parts?
+We should look parts of the solution that can separated described 
+and potentially used in several places in a program or even in other program.
+Break them in smaller manageable parts so once you test them they are 
+doing one logical operation that is tested and scalable latr. 
+
+[4] Why is creating a small, limited version of a program a good idea?
+Build a small, limited version of the problem that solve key part of the 
+problem. When we start we rarely know the problem well. We might think 
+that we know all, but only the combination of analysis, design, implimentation, debuging
+and testing provide a real understanding of the whole program.
+
+[5] Why is feature creep a bad idea?
+When we build limited version of a program that has essential 
+features, we get ambiations and start adding further neat features.
+And end up with bloated code and unnesary features harder to maintane 
+and understand. Get basic required feature working and keep nice to have
+for later stage.
+
+[6] What are the three main phases of software development?
+- Analysis: Figure out what should be done and write a description of 
+your current understanding. such a description is called requirements or 
+specification. 
+- Design: Create an overall structure of the system, deiciding which parts the 
+implimentation should have and how those parts should communicate. 
+Also part of the design is to consider which tools such as libraries can help 
+you to structure the program.
+- implimentation: Write the code, debug it and test that it deos what it is supposed to do.
+
+[7] What is a "use case"?
+A a case scenario in which a user will intracte with your program.
+
+[8] What is the purpose of testing?
+Testing software is essential part of software development cycle. 
+The software requirements should be met by the result of the problem.
+The testing ensure that we have covers and develiverd all the required 
+requirements and also ensure any future changes are not breaking the code
+agnist the requirements.
+
+[9] According to the outline in the chapter, describe the differnce between a Term, and Experession
+a number, and a primary.
+
+Number: A number is a leaf node or taken in the grammar. 
+A floating-point or integer literal a Token.
+
+Primary: A primary is a build block for the evaluation, 
+where parentheses is the highest level. Primary either 
+a raw number of floating-point literal or a full expression 
+wrapped in parentheses.
+
+Term: A higher-precedence sub-component of an Expression. 
+A Term consists of Primaries combined by multiplication 
+(*) or division (/) operators.
+
+Expression: The top-level grammatical construct representing full calculations. 
+An Expression consists of Terms combined by addition (+) or subtraction (-) operators.
+
+1. Structure Breakdown 
+    1.25: A Number, which forms a Primary, which forms a Term, 
+    which acts as the left-hand side of the outer Expression.
+
+    2 * 3: A Term composed of two Primaries (2 and 3) joined by a multiplication operator.
+
+    (2*3): A Primary! Wrapping the expression 2 * 3 in parentheses turns the entire inner 
+    calculation back into a single Primary token for the outer calculation. 
+
+    1.25 + (2 * 3): The full Expression, taking the Term 1.25 and adding the Term (2 * 3).
+
+[10] In the chapter, an input was broken down into its components: 
+Terms, Expressions, Primarys, and Numbers. Do this for (17+4)/(5−1).
+
+17+4: is a expression wrapped in parentheses. This will result in a primary which is a number.
+5-1: is an expression wrapped in parentheses. This will result in a primary which is a number.
+
+(17+4) / (5-1): A Term consisting of two Primaries joined by the division operator 
+(Primary / Primary).
+
+The Entire Line: Evaluates at the top level as an Expression consisting of that single Term.
+
+[11] Why does the program not have a function called number()? 
+    The number is a leaf node or taken in the grammar. Doent need 
+    special handling, ready for evaluation.
+
+[12] What is a token? 
+    The token is a sequence of characters that represents 
+    smallest meaningful unit such as number or operator or characters.
+    Token Types:
+    Literals: Numeric values like 3.14 or 17 (stored with a value).
+    Operators: Syntax characters like +, -, *, /.
+    Grouping Symbols: Parentheses (, ) or statement terminators like ;.
+
+
+[13] What is a grammar? A grammar rule? 
+grammar is a formal set of rules that defines the Syntax of a language.
+Its act as blueprint that determine which sequence of the token or characters 
+are vaild expression or a Syntax error. 
+
+grammar rules, indiviual specification within grammar that dectate how specific 
+syntatic catagory can be build from basic token or characters.
+
+[14] What is a class? What do we use classes for? 
+A class is a core feature in C++ used to create user-defined data types. 
+Classes allow custom types to behave similarly to built-in (primitive) 
+types like int or double.
+
+We use classes to: 
+Bundle Data & Behavior: Group data members (variables) and member functions 
+(methods) into a single entity.
+
+Control Access (Encapsulation): Hide internal state using private members 
+while exposing a controlled interface using public members.
+
+Define Custom Operations: Overload operators (e.g., +, ==, <<) and provide 
+functions to perform operations specific to the custom data type.
+
+[15] How can we provide a default value for a member of a class? 
+In C++, there are two primary ways to provide default values for class members:
+
+    1. In-Class Member Initializers: Provide a default value directly at the variable 
+    declaration inside the class definition using = or {}.
+    class Token {
+        char kind = ' ';     // Default value provided directly
+        double value = 0.0;
+    };
+
+    2. Constructor Initializer Lists: Define default values inside constructors, 
+    or accept arguments to initialize members dynamically when an object is created.
+    class Token {
+            char kind;
+            double value;
+        public:
+            Token() : kind(' '), value(0.0) {} // Default constructor
+            Token(char k, double v) : kind(k), value(v) {} // Parameterized constructor
+    };
+
+
+[16] In the expression function, why is the default for the switch-statement to “put back” the token? 
+    The expression() function handles addition (+) and subtraction (-). 
+    After reading a Term, it fetches the next token to check if an operator follows:
+    If it receives + or -: It consumes the operator and evaluates the next Term. 
+    If it receives anything else (default case): It means the current expression 
+    calculation is complete (e.g., encountered a ';' print command, ) closing parenthesis, 
+    or end-of-input ')'. 
+    Because expression() peeked at that token and realized it isn't + or -, 
+    it must use ts.putback(t) to return the token to the Token_stream. This ensures whatever 
+    function called expression() or the main execution loop can read and handle that token 
+    correctly otherwise it will disappeare.
+
+[17] What is “look-ahead”? 
+    Look-ahead is a parser mechanism where the parser reads one or more upcoming tokens 
+    from the input stream before deciding which grammar rule or action to execute, 
+    without permanently consuming those tokens.
+
+[18] What does putback() do and why is it useful? 
+    putback() is a method on a Token_stream that returns a previously read token back into 
+    the stream buffer so it can be re-read by the next get() call.
+
+    it usefull because, it enables 1-token look-ahead in recursive descent parsers. 
+    Since a parser can only decide which grammar branch to take by inspecting incoming tokens, 
+    putback() lets it "peek" into the future without consuming or destroying input tokens that 
+    other functions need.
+
+[19] Why is the remainder (modulus) operation, %, difficult to implement in the term()? 
+    The remainder operator % is difficult to implement in term() because the calculator's 
+    grammar uses double (floating-point) types for numeric evaluations, whereas the 
+    standard C++ % operator is strictly defined for integer types (int).
+
+[20] What do we use the two data members of the Token class for? 
+    We use two data member kind and value to representing type of the 
+    token and the associated value, 
+    for a floating point we use kind = ´8´ and value = actual input
+    for othertypes kind = to ( ), * + - / % and value = 0
+
+[21] Why do we (sometimes) split a class’s members into private and public members? 
+    We split a class's members into private and public to enforce encapsulation and 
+    data abstraction. This separation creates a clear distinction between how a class 
+    is used versus how it works under the hood.
+
+    As long as the public interface remains unchanged, you can modify, optimize, or 
+    completely rewrite the private internal implementation without breaking any 
+    existing code that depends on the class.
+
+[22] What happens in the Token_stream class when there is a token in the buffer 
+and the get() function is called? 
+    When get() is called while a token is present in the buffer, the function performs 
+    three specific actions:
+
+    Returns the buffered token: It retrieves the Token currently stored in the internal 
+    buffer variable rather than reading a new character from standard input (cin).
+
+    Clears the buffer flag: It sets the full boolean flag to false to indicate that the 
+    buffer is now empty.
+
+    return the token value: It returns that retrieved Token directly back to the 
+    caller (e.g., primary(), term(), or expression()).
+
+[23] Why were the ';' and 'q' characters added to the switch-statement in the get() 
+function of the Token_stream class? 
+    The ; and 'q' characters were added to Token_stream::get() to serve as control 
+    signals for evaluation and program flow, rather than being treated as syntax errors.
+
+[24] When should we start testing our program? 
+    You should start testing your program from the very beginning of development ideally 
+    during initial design and as soon as the first small, runnable piece of code is 
+    written, rather than waiting until the entire program is finished.
+
+[25] What is a “user-defined type”? Why would we want one? 
+    A user-defined type is a custom data type created by the programmer 
+    (using constructs like class or struct in C++) rather than one built 
+    directly into the language syntax (like int, double, or char).
+
+    Domain Modeling: Built-in types like double or int carry no domain context. 
+    Creating custom types like Token, Vector, or Date allows code to directly 
+    reflect real-world or problem-specific concepts.
+
+    Encapsulation & Safety: Grouping related data members and member functions 
+    into a single type ensures that data cannot be easily corrupted or placed 
+    in an invalid state by outside code.
+
+    Abstraction & Code Reuse: A user-defined type hides complex implementation 
+    details behind a clean, simple public interface, making code easier to read, 
+    maintain, and reuse across different parts of a program.
+
+    
+[26] What is the interface to a C++ “user-defined type”? 
+    A class and struct
+
+[27] Why do we want to rely on libraries of code?
+    We rely on code libraries primarily to avoid reinventing the wheel, allowing us 
+    to build reliable software faster by leveraging well-tested, optimized solutions 
+    created by experts.
