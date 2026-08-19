@@ -1,5 +1,8 @@
 /*
-[20] Modify the program from the previous exercise so that once you have entered the name-and-value pairs, you ask for names: In a loop, when you enter a value, the program will output all the names with that score or score not found.
+[20] Modify the program from the previous exercise so that
+once you have entered the name-and-value pairs,
+you ask for names: In a loop, when you enter a value,
+the program will output all the names with that score or score not found.
 */
 #include <iostream>
 #include <string>

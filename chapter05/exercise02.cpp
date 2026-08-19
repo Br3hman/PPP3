@@ -1,24 +1,5 @@
 /*
-[3] Change the character used as the print command from ; to =.
-[4] Add a greeting line in main():  
-    "Welcome to our simple calculator.
-Please enter expressions using floating−point numbers."
-
-
-//class Token 
-//class Token_stream 
-
-//void Token_stream::putback(Token t) 
-//Token Token_stream::get() 
-
-//Token_stream ts;                               // provides get() and putback()
-//double expression();                         // declaration so that primary() can call expression()
-
-//double primary()                 // deal with numbers and parentheses
-//double term()                      // deal with * and /
-// double expression()          // deal with + and -
-
-
+[2] Add the ability to use {} as well as () in the program, so that {(4+5)*6} / (3+4) will be a valid expression.
 */
 #include <iostream>
 #include<PPP_error.h>
@@ -69,7 +50,8 @@ Token Token_stream::get(){
     case 'q': // for "quite"
     case 'x': // for "exit"
     case '=': // for "print"
-    case '(': case ')': case '+': case '-': case '*': case '/': 
+    case '{':case '}':
+    case '(': case ')': case '+': case '-': case '*': case '/':
         return Token{ch}; // let each charater represent it self, here is Token constructor used
         //break; // we already return it will reached
     case '.':
@@ -99,6 +81,17 @@ double primary()
     Token t = ts.get();
     switch (t.kind)
     {
+    case '{':
+    {
+        double d = expression();
+        t = ts.get();
+        if (t.kind != '}')
+        {
+            std::cout<< "got "<< t.kind<<"\n";{}
+            PPP::error("'}' expected");
+        }
+        return d;
+    }
     case '(': // handle '(' expression ')'
     {
         double d = expression();
@@ -178,7 +171,7 @@ int main() {
             Token t = ts.get();
             if (t.kind == 'q' || t.kind == 'x'){
                 break; // 'q' for quit
-            } 
+            }
             if (t.kind == ';' ){ // ';' for print
                 std::cout << "=" << val << '\n';
             }

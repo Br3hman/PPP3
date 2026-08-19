@@ -1,22 +1,19 @@
 /*
-[3] Change the character used as the print command from ; to =.
-[4] Add a greeting line in main():  
-    "Welcome to our simple calculator.
-Please enter expressions using floating−point numbers."
+[3] Add a factorial operator: use a suffix ! operator to represent “factorial.” For example,
+the expression 7! means 7 * 6 * 5 * 4 * 3 * 2 * 1. Make ! bind tighter than * and /; that is,
+7*8! means 7*(8!) rather than (7*8)!. Begin by modifying the grammar to account for a
+higher-level operator. To agree with the standard mathematical definition of factorial,
+let 0! evaluate to 1. Hint: The calculator functions deal with doubles, but factorial
+is defined only for ints, so just for x!, assign the x to an int and calculate the
+factorial of that int.
 
-
-//class Token 
-//class Token_stream 
-
-//void Token_stream::putback(Token t) 
-//Token Token_stream::get() 
-
-//Token_stream ts;                               // provides get() and putback()
-//double expression();                         // declaration so that primary() can call expression()
-
-//double primary()                 // deal with numbers and parentheses
-//double term()                      // deal with * and /
-// double expression()          // deal with + and -
+1. Create a function that takes an int and returns the factorial of that int. If the int is
+    negative, call error() to report that factorial is not defined for negative numbers.
+    If the int is 0 or 1, return 1. Otherwise, use a loop to calculate the factorial.
+2. Create a function that takes a double and returns the factorial of that double. Assign
+    the double to an int and call the function from step 1.
+3. Create a function that modifies use of primary() in term() as postfix_primary() to
+handle the ! operator. Call postfix_primary() from term() instead of primary().
 
 
 */
@@ -27,6 +24,21 @@ Please enter expressions using floating−point numbers."
 //#include <algorithm>
 //#include <map>
 #include<cmath>
+
+
+double getfactorial(int n){
+    if(n<0){
+        PPP::error("Factorial is not defined for negative numbers");
+    }
+    if(n==0 || n==1){
+        return 1;
+    }
+    double result = 1;
+    for(int i=2; i<=n; ++i){
+        result *= i;
+    }
+    return result;
+}
 
 class Token {
     public:
@@ -39,7 +51,7 @@ class Token {
 //================================================================
 class Token_stream{
     public:
-        Token get(); // get a token 
+        Token get(); // get a token
         void putback(Token t); // put a Token back
     private:
         bool full = false; // is there a Token in the buffer?
@@ -69,7 +81,8 @@ Token Token_stream::get(){
     case 'q': // for "quite"
     case 'x': // for "exit"
     case '=': // for "print"
-    case '(': case ')': case '+': case '-': case '*': case '/': 
+    case '{':case '}':
+    case '(': case ')': case '+': case '-': case '!': case '*': case '/':
         return Token{ch}; // let each charater represent it self, here is Token constructor used
         //break; // we already return it will reached
     case '.':
@@ -99,6 +112,17 @@ double primary()
     Token t = ts.get();
     switch (t.kind)
     {
+    case '{':
+    {
+        double d = expression();
+        t = ts.get();
+        if (t.kind != '}')
+        {
+            std::cout<< "got "<< t.kind<<"\n";{}
+            PPP::error("'}' expected");
+        }
+        return d;
+    }
     case '(': // handle '(' expression ')'
     {
         double d = expression();
@@ -114,22 +138,33 @@ double primary()
         return 0; // unreachable; silences -Wreturn-type
     }
 }
-
+//----------------getPostfix() function--------------------------
+double postfix_primary(){
+    double left = primary(); // reads a number or parenthesized experssion
+    Token t = ts.get(); //read the next token
+    while (t.kind == '!') // now I need to take factorial
+    {
+        left = getfactorial(left);
+        t = ts.get();
+    }
+    ts.putback(t);
+    return left;
+}
 //----------------term() function-------------------------------
 
 double term(){
-    double left = primary();
+    double left = postfix_primary();
     Token t = ts.get();
     while (true)
     {
         switch (t.kind)
         {
         case '*': // we multiply left with next primary()
-            left *= primary();
+            left *= postfix_primary();
             t = ts.get();  //get next
             break;
         case '/': { // we divide left with next primary()
-            double d = primary();
+            double d = postfix_primary();
             if(std::abs(d)>0){
                 left /=d;
                 t=ts.get();
@@ -178,7 +213,7 @@ int main() {
             Token t = ts.get();
             if (t.kind == 'q' || t.kind == 'x'){
                 break; // 'q' for quit
-            } 
+            }
             if (t.kind == ';' ){ // ';' for print
                 std::cout << "=" << val << '\n';
             }
