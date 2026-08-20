@@ -34,7 +34,7 @@ negative numbers should be rejected and an error message should be printed.
 if b is greater than a then an error message should be printed and the program should terminate.
 also datatype overflow should be checked for factorial function, 
 if the number is too large then an error message should be printed and the program should terminate.
-
+ 
 */
 #include <iostream>
 #include <stdexcept>
