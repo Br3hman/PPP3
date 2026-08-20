@@ -53,8 +53,7 @@ int main() {
                     std::cout<<" "<< digit<<" "<<( digit <= 1 ? numbers[idx]:numbers[idx]+"s");
                 }
         }
-
-
+        std::cout << ".\n";
     }
     catch(const std::exception& e)
     {
