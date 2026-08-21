@@ -168,12 +168,13 @@ int main() {
         std::cout << "\tWelcome to our simple calculator. \nPlease enter expressions using floating-point numbers.\n";
         while (std::cin)
         {
+            std::cout << "> "; // prompt
             Token t = ts.get();
             if (t.kind == 'q' || t.kind == 'x'){
                 break; // 'q' for quit
             }
             if (t.kind == ';' ){ // ';' for print
-                std::cout << "=" << val << '\n';
+                std::cout << "= " << val << '\n';
             }
             else if(t.kind == '='){ // ';' for print
                 std::cout << val << '\n';
@@ -181,8 +182,8 @@ int main() {
             }
             else{
                 ts.putback(t);
-                val = expression();
             }
+            val = expression();
         }
     }
     catch (const std::exception& e) {
