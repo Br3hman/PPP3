@@ -1,40 +1,140 @@
 [1] What is the purpose of working on the program after the first version works?
 Give a list of reasons.
+    A first version usually follows a simple path for one input and check if 
+    we get required output.
+    - After that next versions started to handle edge cases, in case of calculator
+    program could be division by zero or negative sqrt operation etc.
+    - Adding new features like % for fmod, sqrt, or pow function.
+    - clean up and simplify the code now that you understand the problem better
+    - add comments/structure so the code stays readable and maintainable
+    - make it match the full spec, not just the one case you first tried
+    - make it easier to extend later (new operators, new token kinds)
 
 [2] Why does 1+2; q typed into the calculator not quit after it receives an error?
+    We had different version so far but very basic one expected 'q' in the newer token
+    rather than in stream of input on same line. Later we fixed it and also
+    has changed from 'q' to 'Q' to 'quit' and 'exit' or even 'x'.
+
 
 [3] Why did we choose to make a constant character called number?
+    '8' by itself is a "magic" character with no obvious meaning if it appears in a
+    switch statement or comparison. Giving it the name `number` documents that this
+    value is only ever used as the Token::kind tag meaning "this Token holds a
+    number", makes the intent obvious at the call site, and means the internal
+    representation can be changed in one place if it ever needs to.
 
 [4] We split main() into two separate functions. What does the new function do and
 why did we split main()?
+    The new function, calculate(), is the read-evaluate-print loop: it prints the
+    prompt, reads a statement, prints the result, and catches/reports errors so it can
+    keep looping.
+
+    main() now only does start-up (defining predefined names like pi, e)
+    and top-level error handling (catching anything calculate() doesn't handle, and
+    returning an exit code).
+
+    Each function now has one job.
 
 [5] Why do we split code into multiple functions? State principles.
+    - each function should do one clearly-named logical task (single responsibility)
+    - code used more than once belongs in a function instead of being duplicated
+    - a function is a unit you can read, test, and reason about on its own
+    - a good function name documents intent, hiding implementation detail from callers
+    - keeping functions short keeps the overall program layout (and the grammar it
+      implements, e.g. expression()/term()/primary()) easy to follow
 
 [6] What is the purpose of commenting?
+    To explain things the code itself can't show: why a piece of code exists, what
+    grammar/rule it's implementing, assumptions/invariants, and non-obvious choices.
+    Comments are for intent, not for restating what the next line already says.
 
 [7] What is the use of symbolic constants?
+    They give a meaningful name to a value that would otherwise be a "magic" literal
+    (e.g. `quit` instead of 'Q', `declkey` instead of "let"). This makes the code
+    self-documenting, avoids typos from repeating the same literal everywhere, and
+    means the value only needs to change in one place.
+
+    They can also be used for mathematic symbolics like pi, k for kilo (1000).
+    'e' for exponetial etc.
 
 [8] Why do we care about code layout?
+    Consistent indentation and spacing let a reader see the program's structure
+    (nesting, scope, matching braces) at a glance without having to trace it
+    mentally. It costs nothing at compile time but has a big effect on how quickly
+    someone (including future me) can understand and safely modify the code.
 
 [9] How do we handle % (remainder) of floating-point numbers?
+    The built-in % operator only works on integers, so for doubles we use
+    std::fmod(left, d) from <cmath>, which computes the floating-point remainder
+    (left - d * trunc(left / d)) directly, after checking the divisor isn't zero.
 
 [10] What does is_declared() do and how does it work?
+    It reports whether a given variable name already exists in the variable table.
+    It loops over every Variable stored in the vector (names/var_table) and returns
+    true as soon as it finds one whose .name matches the string passed in; if it
+    gets through the whole table without a match, it returns false. declaration()
+    uses it to reject re-declaring the same name ("... declared twice").
 
 [11] The input representation for 'let' is more than one character.
 How is it accepted as a single token in the modified code?
+    Token_stream::get() doesn't compare characters one at a time against "let".
+    When it sees the first letter, it keeps reading and appending characters
+    (isalpha() || isdigit()) into a std::string until it hits a
+    non-letter/non-digit character, so it collects the *whole word* first.
+    Only then does it compare that whole string against declkey ("let");
+    if it matches, it returns a single Token whose kind is the one-character
+    symbolic constant `let`. So the multi-character keyword is turned into
+    one token during lexing, before the parser ever sees it.
 
 [12] What are the rules for what names can and cannot be in a calculator program?
+A name must start with a letter, and after that may contain any mix of letters
+and digits (isalpha(ch) to start, then isalpha||isdigit while collecting). It
+can't be spelled the same as a reserved keyword ("let", or "sqrt"/"pow" in the
+extended versions), since those are recognized as special tokens instead of
+names. A name must be declared with `let` before it's used, and the same name
+can't be declared twice.
 
 [13] Why is it a good idea to build a program incrementally?
+Small steps are easier to write, test, and debug in isolation; if something
+breaks, you know it's almost certainly in the code you just added, not buried
+somewhere in a large untested program. It also gives you real feedback about the
+problem early, instead of discovering design mistakes only after everything is
+written.
 
 [14] When do you start to test?
+As soon as you have a small piece of working code - test each function or
+feature as you write it, rather than waiting until the whole program is
+"finished".
 
 [15] When do you retest?
+Every time the code changes, even a small fix or a new feature - rerun the
+existing tests (regression testing) to make sure nothing that used to work got
+broken, in addition to testing whatever is new.
 
 [16] How do you decide what should be a separate function?
+If it's a distinct logical step (e.g. "get a token" vs. "evaluate an
+expression"), if the same code is needed in more than one place, if giving it a
+name would make the calling code clearer, or if it needs to be tested or
+understood on its own - it should be its own function.
 
 [17] How do you choose names for variables and functions? List possible reasons.
+- name it after what it does/represents (get_value, is_declared, calculate)
+- match the vocabulary of the problem/grammar (expression, term, primary, Token)
+- be consistent with the naming style already used in the file (snake_case here)
+- avoid ambiguous abbreviations, and avoid clashing with keywords or library names
+- prefer clarity over brevity, but don't make names longer than needed to be clear
 
 [18] What should be in comments and what should not?
+Should: the reason/intent behind non-obvious code, the grammar or spec rule being
+implemented, warnings about tricky behavior (e.g. an intentional switch
+fall-through), and known limitations.
+Should not: a restatement of what the very next line of code already makes
+obvious, out-of-date information, or long-since-dead commented-out code.
 
 [19] When do we consider a program finished?
+When it meets its stated requirements, handles the expected error/edge cases
+(not just the happy path) without crashing, passes its tests, and is clean and
+documented enough for someone else (or future you) to maintain. In practice a
+real program is rarely "finished" for good - requirements and edge cases keep
+turning up - but a program is done for now when it reliably does what it was
+asked to do.
