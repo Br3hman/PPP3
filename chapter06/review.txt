@@ -84,57 +84,57 @@ How is it accepted as a single token in the modified code?
     Only then does it compare that whole string against declkey ("let");
     if it matches, it returns a single Token whose kind is the one-character
     symbolic constant `let`. So the multi-character keyword is turned into
-    one token during lexing, before the parser ever sees it.
+    one token, before the parser ever sees it.
 
 [12] What are the rules for what names can and cannot be in a calculator program?
-A name must start with a letter, and after that may contain any mix of letters
-and digits (isalpha(ch) to start, then isalpha||isdigit while collecting). It
-can't be spelled the same as a reserved keyword ("let", or "sqrt"/"pow" in the
-extended versions), since those are recognized as special tokens instead of
-names. A name must be declared with `let` before it's used, and the same name
-can't be declared twice.
+    A name must start with a letter, and after that may contain any mix of letters
+    and digits (isalpha(ch) to start, then isalpha||isdigit while collecting). It
+    can't be spelled the same as a reserved keyword ("let", or "sqrt"/"pow" in the
+    extended versions), since those are recognized as special tokens instead of
+    names. A name must be declared with `let` before it's used, and the same name
+    can't be declared twice.
 
 [13] Why is it a good idea to build a program incrementally?
-Small steps are easier to write, test, and debug in isolation; if something
-breaks, you know it's almost certainly in the code you just added, not buried
-somewhere in a large untested program. It also gives you real feedback about the
-problem early, instead of discovering design mistakes only after everything is
-written.
+    Small steps are easier to write, test, and debug in isolation; if something
+    breaks, you know it's almost certainly in the code you just added, not buried
+    somewhere in a large untested program. It also gives you real feedback about the
+    problem early, instead of discovering design mistakes only after everything is
+    written.
 
 [14] When do you start to test?
-As soon as you have a small piece of working code - test each function or
-feature as you write it, rather than waiting until the whole program is
-"finished".
+    As soon as you have a small piece of working code, test each function or
+    feature as you write it, rather than waiting until the whole program is
+    "finished".
 
 [15] When do you retest?
-Every time the code changes, even a small fix or a new feature - rerun the
-existing tests (regression testing) to make sure nothing that used to work got
-broken, in addition to testing whatever is new.
+    Every time the code changes, even a small fix or a new feature - rerun the
+    existing tests (regression testing) to make sure nothing that used to work got
+    broken, in addition to testing whatever is new.
 
 [16] How do you decide what should be a separate function?
-If it's a distinct logical step (e.g. "get a token" vs. "evaluate an
-expression"), if the same code is needed in more than one place, if giving it a
-name would make the calling code clearer, or if it needs to be tested or
-understood on its own - it should be its own function.
+    If it's a distinct logical step (e.g. "get a token" vs. "evaluate an
+    expression"), if the same code is needed in more than one place, if giving it a
+    name would make the calling code clearer, or if it needs to be tested or
+    understood on its own, it should be its own function.
 
 [17] How do you choose names for variables and functions? List possible reasons.
-- name it after what it does/represents (get_value, is_declared, calculate)
-- match the vocabulary of the problem/grammar (expression, term, primary, Token)
-- be consistent with the naming style already used in the file (snake_case here)
-- avoid ambiguous abbreviations, and avoid clashing with keywords or library names
-- prefer clarity over brevity, but don't make names longer than needed to be clear
+    - name it after what it does/represents (get_value, is_declared, calculate)
+    - match the vocabulary of the problem/grammar (expression, term, primary, Token)
+    - be consistent with the naming style already used in the file (snake_case here)
+    - avoid ambiguous abbreviations, and avoid clashing with keywords or library names
+    - prefer clarity over brevity, but don't make names longer than needed to be clear
 
 [18] What should be in comments and what should not?
-Should: the reason/intent behind non-obvious code, the grammar or spec rule being
-implemented, warnings about tricky behavior (e.g. an intentional switch
-fall-through), and known limitations.
-Should not: a restatement of what the very next line of code already makes
-obvious, out-of-date information, or long-since-dead commented-out code.
+    Should: the reason/intent behind non-obvious code, the grammar or spec rule being
+    implemented, warnings about tricky behavior (e.g. an intentional switch
+    fall-through), and known limitations.
+    Should not: a restatement of what the very next line of code already makes
+    obvious, out-of-date information, or long-since-dead commented-out code.
 
 [19] When do we consider a program finished?
-When it meets its stated requirements, handles the expected error/edge cases
-(not just the happy path) without crashing, passes its tests, and is clean and
-documented enough for someone else (or future you) to maintain. In practice a
-real program is rarely "finished" for good - requirements and edge cases keep
-turning up - but a program is done for now when it reliably does what it was
-asked to do.
+    When it meets its stated requirements, handles the expected error/edge cases
+    (not just the happy path) without crashing, passes its tests, and is clean and
+    documented enough for someone else (or future me) to maintain. In practice a
+    real program is rarely "finished" for good, requirements and edge cases keep
+    turning up, but a program is done for now when it reliably does what it was
+    asked to do.
