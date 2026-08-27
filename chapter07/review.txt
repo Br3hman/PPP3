@@ -1,0 +1,337 @@
+[1] What is the difference between a declaration and a definition?
+    For Function and class:
+        Declaration: Tells the compiler the name, return type, and parameters
+        of a function (or the structural layout of a class) so we can use it
+        before its implementation. It requires no memory for function execution logic.
+            Example: void printMessage();
+        Definition: Provides the actual body of the function.
+            Example: void printMessage() { std::cout << "Hello"; }
+
+    Variable:
+        To write a pure declaration for a variable (one that allocates no memory),
+        we must use the extern keyword. This tells the compiler, "This variable exists,
+        but its memory is already allocated somewhere else."
+        Writing int x; (without assigning a value) still allocates memory immediately.
+        The compiler reserves 4 bytes on the stack right away;
+        x just holds garbage data until you assign a value.
+
+[2] How do we syntactically distinguish between a function declaration and a function definition?
+    syntactically a declaration ends immediately with a semicolon ';' whereas
+    definition has a block body enclosed in '{}' that contains actual code.
+    Declaration: void printMessage(std::string); // It not requires to name the argument, but its good to do it
+    definition: void printMessage(std::string s) { std::cout << "Hello"<<s<<"\n"; }
+
+[3] How do we syntactically distinguish between a variable declaration and a variable definition?
+    syntactically a pure declaration is written with extern keyword and no initialization value. whereas
+    variable definition is written without extern or with extern but with an initial value.
+    Pure Declaration: extern int x; // x exist somewhere else
+    Definition:
+    int x;      // Definition: Allocates memory (holds uninitialized/garbage value)
+    int x=10;   // Definition: Allocates memory AND initializes it with 10
+    extern int x=10; //Special Case DEFINITION (The initializer forces it to allocate memory)
+
+[4] Why can’t you use the functions in the calculator program from Chapter 5 without declaring
+one or more of them first?
+    C++ Compiles Top-to-BottomThe C++ compiler reads our source file sequentially from line 1
+    down to the end. It must know about a function's name, return type, and parameters before
+    it encounters any code trying to call it.
+    If functionA() calls functionB(), but functionB() is written further down in the file,
+    the compiler will throw an error saying functionB was not declared in this scope.2.
+    The Calculator's "Cyclic Dependency" (Circular Calls)
+    The primary reason we must use forward declarations in the
+    calculator is that the grammar functions call each other in a loop:
+    expression() -> term() -> primary() -> expression()
+
+    expression() calls term()
+    term() calls primary()
+    primary() calls expression() (to handle parenthesized expressions like (1 + 2))
+    No matter which order you place their full definitions in the file, at least one
+    function will always try to call a function defined below it.
+
+[5] Is int a; a definition or just a declaration?
+    It is a definition. allocated memory and hold uninitialized or garbage value.
+
+[6] Why is it a good idea to initialize variables as they are declared?
+    uninitialized variable holds garbage value so its always a good idea to initialize it.
+    It prevent undefined behavior and makes code intent clear and readable.
+    If you know a variable's initial value right at declaration and it shouldn't change
+    and you mark it as const, and if the variable is a const type you must
+    initialize at declaration.
+
+[7] What can a function declaration consist of?
+    1. Traditional Syntax
+        // [Return Type] [Name] ([Parameter Types]);
+        double calculateArea(double length, double width);
+    2. Trailing Return Type Syntax (C++11 and later)
+        The trailing return type syntax! It uses auto at the
+        beginning and places the actual return type after an arrow (->):
+
+        // auto [Name] ([Parameter Types]) -> [Return Type];
+        auto calculateArea(double length, double width) -> double;
+
+[8] What is the suffix return type notation, and why might you use it?
+    The suffix return type notation is also called Trailing Return Type.
+    The trailing return type syntax! It uses auto at the
+        beginning and places the actual return type after an arrow (->):
+
+        // auto [Name] ([Parameter Types]) -> [Return Type];
+        auto calculateArea(double length, double width) -> double;
+
+    One of the valuable point was made in the book is that the difference
+    become more noticeable when the return name becomes longer and more
+    elaborate.
+
+[9] What good does indentation do?
+    The indentation is useful to indicate nesting.
+    Without consistent indentation, nested constructs become
+    unreadable and a place for error as hard to read
+    code usually hides the bugs.
+
+[10] What is the scope of a declaration?
+    The scope of a declaration is the region of the program text where the
+    declared name is valid, visible, and can be legally referenced by the compiler.
+
+[11] What kinds of scope are there? Give an example of each.
+    1. Local Scope within in a block scope: When declared inside a Function
+    or statement such as if {} or For loop. The local scope is just within
+    that {} block.
+
+    2. Global Scope within a file or NameSpace scope. When something is
+    declared outside of all functions, classes and namespaces. visible
+    throughout the entire file also potentially other files when using
+    extern that is from declaration point to end of the files
+
+    3. Class Scope: Declaration inside a class or struct, visible to
+    member function of that class, regardless of where they are defined within
+    the class.
+
+    4. namespace scope: Declaration inside a namespaces (e.g., namespace myKit {}).
+    visible anywhere within the namespace or outside of it using the scope resolution
+    operator :: for example myKit::name.
+
+
+[12] What is the difference between a class scope and local scope?
+    1. Class Scope
+    Visibility: Members (variables and functions) declared inside
+    a class or struct are visible to all methods throughout the entire class,
+    regardless of the order they are written.
+    Unique Feature (Order-Independent): Unlike local scope, a member function can
+    access a member variable declared below it inside the class definition.
+    Lifetime: Class variables exist as long as the object instance exists in memory.
+
+    2. Local Scope (Block Scope)
+    Visibility: Names declared inside a set of curly braces { }
+    (like a function body, if statement, or loop) are visible only from their point of
+    declaration down to the closing brace}.
+    Strict Top-to-Bottom: You cannot access a local variable before the exact line it is declared.
+    Lifetime: Local variables are created when execution enters the block
+    { and destroyed immediately when execution exits the block }.
+
+[13] Why should a programmer minimize the number of global variables?
+    Minimizing global variables is a fundamental principle of writing clean,
+    maintainable software.
+    Here are the main reasons why reliance on global variables should be avoided:
+    1. Harder to Debug and Trace State
+        Because any function anywhere in your program can modify a global variable,
+        it becomes extremely difficult to track down where and when a value was unexpectedly changed.
+        You lose control over the variable's state history.
+
+    2. Risk of Name Collisions
+        As projects grow larger or integrate third-party libraries, using global variables increases
+        the chance that two separate parts of the codebase will accidentally use the same variable name,
+        leading to unexpected compilation errors or logic bugs.
+
+    3. Tight Coupling and Poor Reusability
+        Functions that rely on global variables cannot be easily taken out of one project and reused in another.
+        They depend on hidden external dependencies rather than taking explicit inputs through their parameter lists.
+
+    4. Breaks Thread Safety (Concurrency Issues)
+        In modern multi-threaded programs, if multiple threads attempt to read and write to the same global
+        variable simultaneously without complex locking mechanisms, it leads to race conditions and
+        unpredictable memory corruption.
+
+    5. Hidden Data Dependencies
+        When a function takes arguments, its inputs are clear and self-documenting.
+        When a function silently modifies global variables, its behavior becomes opaque,
+        making the code harder for other programmers to read and test reliably.
+
+[14] What is the difference between pass-by-value and pass-by-reference?
+    pass-by-value: When small values such as int, double or char are passed to
+    a function by copying the value to its argument or return from a function to
+    callee of the function.
+    where as pass-by-reference is used for containers such as vector or string to
+    pass to a function where we refer the memory address to the function argument or
+    return from a function the refer of that variable.
+    If pass-by-reference is done with const, then function cannot change the value but
+    if not then change the value within function changes that variable completely and
+    if passe-by-value its just local change of that variable doesnt effects the source
+    of the value.
+    Returning by Reference: The golden rule of reference returns: Never return a reference
+    to a local variable created inside the function! Once the function finishes executing,
+    that local variable is destroyed, leaving you with a dangerous "dangling reference."
+
+[15] What is the difference between pass-by-reference and pass-by-const-reference?
+    The primary difference comes down to mutability (whether the function can modify
+    the caller's variable) and what kinds of arguments can be passed into the function.
+
+    Rule of thumb is:
+    [1] Use pass-by-value to pass very small objects.
+    [2] Use pass-by-const-reference to pass large objects that you don’t need to modify.
+    [3] Return a result rather than modifying an object through a reference argument.
+    [4] Use pass-by-reference only when you have to.
+
+    An example from book is very good to understand it,
+    void g(int a, int& r, const int& cr)
+    {
+             ++a;                   // change the local a
+             ++r;                   // change the object referred to by r
+             int x = cr;          // read the object referred to by cr
+    }
+
+    int main()
+    {
+             int x = 0;
+             int y = 0;
+             int z = 0;
+
+             g(x,y,z);             // x==0; y==1; z==0
+             g(1,2,3);             // error: reference argument r needs a variable to refer to
+             g(1,y,3);             // OK: since cr is const we can pass a literal
+    }
+
+[16] What is a swap()?
+    A swap() function exchange the values of two variable so that
+    first variable received second variable value and second receives
+    first variable value. There is standard version of c++ too,
+    it relies on pass-by-reference to directly modify the caller's
+    original variables.
+
+[17] Would you ever define a function with a vector<double> as a by-value parameter?
+    Normally it is expensive deep copy but in following cases we might do it
+    1. If you need local copy anyway, to modify and do something with it.
+    2. if your want to move the data. When a function takes ownership of the data
+    (e.g., storing it inside a class member variable), taking the parameter by
+    value allows caller-side moving (std::move).
+
+[18] Give an example of undefined order of evaluation. Why can undefined order of evaluation be a problem?
+    when an expression or function call has multiple subexpressions, the compiler is allowed to execute
+    them in whatever order it chooses.when multiple subexpression or function
+
+    void printTwo(int a, int b) { /* ... */ }
+    int i = 0;
+    printTwo(i++, i++); // UNDEFINED ORDER OF EVALUATION!
+
+    int x = 10;
+    int result = x + ++x; // Problem! Does it read 'x' before or after incrementing?
+
+    Key Exceptions (Guaranteed Order)
+    Order of evaluation is not left-to-right for most operations, with a few strict exceptions:
+        Logical Operators (&& and ||): Guaranteed left-to-right with short-circuiting.
+        Comma Operator (,): Guaranteed left-to-right (expr1 , expr2).
+        Ternary Operator (? :): Evaluates the condition first, then only one of the branches.
+        C++17 Chain Guarantees: C++17 added stricter rules for expressions like
+        a.b(), a << b, and a = b (where b is evaluated before a receives it),
+        but function argument ordering remains mostly un-specified.
+
+        Golden Rule: Never modify a variable and read/modify it again within the
+        same un-sequenced expression! Break complex statements into multiple lines instead.
+
+[19] What do x&&y and x||y, respectively, mean?
+    && is logically AND and || is logical OR functions
+
+[20] Which of the following is standard-conforming C++:
+functions within functions, functions within classes, classes within classes, classes within functions?
+
+    No-conforming: functions within functions, but Modern C++ achieves
+    function-like behavior inside functions using lambdas,
+    but classic function nesting remains non-standard
+
+    Conforming:
+    functions within classes (member Function)
+    classes within classes, (Nested classes)
+    classes within functions (local classes)
+
+[21] What goes into an activation record?
+    An activation record (also called a stack frame) is a chunk of memory pushed
+    onto the call stack whenever a function is called. It contains:
+    -Function Parameters: Input arguments passed to the function.
+    -Return Address: Memory address of the instruction to return to after the function finishes.
+    -Local Variables: Variables declared inside the function body.
+    -Saved Register State / Frame Pointer: Saved CPU registers so the caller's execution state can be restored upon return.
+
+[22] What is a call stack and why do we need one?
+    The call stack is a specialized LIFO (Last-In, First-Out)
+    memory structure managed by the CPU and OS that tracks active function calls in a executing program.
+    It remembers where to return (the return address) when a function finishes executing so control
+    returns to the exact line in the caller function.
+    The allocates memory dynamically for each function's activation record (local variables, arguments,
+    and CPU register states) upon entry and automatically frees it when the function returns.
+    It allows functions to call other functions—or call themselves—without overwriting variable values or losing track of the call hierarchy.
+
+[23] What is the purpose of a namespace?
+    The primary purpose of a namespace is to prevent name collisions (naming conflicts) in programs
+    by grouping related functions, classes, and variables under a distinct scope name.
+
+[24] How does a namespace differ from a class?
+    While both namespaces and classes create distinct naming scopes in C++,
+    they serve completely different fundamental purposes in the language.
+    Think of a namespace as a folder/directory that groups related code so names don't clash.
+    Think of a class as a factory blueprint used to stamp out concrete objects with data
+    (member variables) and behavior (member functions).
+
+[25] What is a using declaration?
+    using declaration: A using declaration introduces a single specific member
+    from a namespace into the current scope.
+
+    Syntax: using [namespace]::[name];
+
+    Example: using std::cout;
+
+    Effect: Now you can type cout directly,
+    but for everything else (like std::cin or std::string),
+    you still have to write std::.
+
+    using Directive: whereas using Directive (Global/Broad)
+    A using directive brings every single name from a
+    namespace into the current scope all at once.
+
+    Syntax: using namespace [namespace];
+
+    Example: using namespace std;
+
+    Effect: You can use cout, cin, vector, string, and
+    everything else in std without prefixing std::.
+
+[26] Why should you avoid using directives in a header?
+    We should avoid placing using directives
+    (like using namespace std;) in header (.h or .hpp)
+    files primarily because of "namespace pollution" and name collisions.
+
+    *. The Transitive Nature of Header Files: When you #include a header file,
+    the preprocessor copies the entire content of that header into the source file
+    that included it and into any other header files that include that header.
+
+    If we put using namespace std; inside my_header.h, every single .cpp
+    file that includes my_header.h (directly or indirectly) will automatically
+    pull the entire std namespace into its global scope.
+
+    The programmer including our header has no choice or control over this behavior.
+
+    2. Unexpected Name Collisions (Ambiguity Errors): Pulling thousands of standard library
+    names into the global scope creates subtle and dangerous bugs. For example, if you define
+    your own custom count function or vector class, and someone includes a header containing
+    using namespace std;, the compiler won't know whether you mean your count or std::count,
+    resulting in compilation errors:
+
+[27] What is namespace std?
+    namespace std (short for "standard") is the official
+    namespace created by the ISO C++ Standards Committee
+    to house all components of the C++ Standard Library.
+    Key Concepts
+    Purpose: It acts as a container to organize standard functions,
+    classes, and objects (like std::cout, std::cin, std::vector, std::string, std::pow)
+    and keep them isolated from your own custom code.
+
+    Prevents Name Conflicts: By placing standard features inside std,
+    C++ ensures that if you create a function named cout or a class named vector,
+    your names won't conflict with the standard library's versions.
