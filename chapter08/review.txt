@@ -1,0 +1,220 @@
+Review
+[1] What are the two parts of a class, as described in the chapter?
+    The two parts of a class are Public and private parts.
+
+[2] What is the difference between the interface and the implementation in a class?
+    The interfaces are public part of the a class giving access to user to use the
+    class object, whereas the implementation are kept private, user doesnt have to
+    look into it, also it allows to do changes without effecting user code.
+
+[3] What are the limitations and problems of the struct Date from §8.4.1?
+    All the member variables and methods (if any) are public and there is
+    is no encapsulation, user can directly modify with validation checks.
+    No default initialization, a struct object has garbage values instead of useful default
+    values.
+
+[4] Why is a constructor used for the Date type instead of an init_day() function?
+    For quick initialization with valid default values, we can create a default constructor.
+    Basically to avoid invalid data to set as date, we can use the constructor to give
+    valid data.
+
+[5] What is an invariant? Give examples.
+    An invariant is a rule or a condition that must always be true for an object
+    or a system to be in a valid state.
+    For example:
+    A month value must be between 1 and 12.
+    A leap year month feb has 29 days otherwise 28 days.
+    A day should be within 1 to 31.
+    A Year entry should not be negative number and so on.
+    Note that a negative year could be valid if a program represents BCE dates
+    (e.g., $-44$ for 44 BCE), but prohibiting negative years is a valid invariant
+    if your Date class explicitly requires AD/CE dates.
+
+[6] When should functions be put in the class definition,
+and when should they be defined outside the class? Why?
+    If you want your function be inline then we can put the function
+    definition within the class, for example if function is about 1 or 3 lines
+    long and doesnt effect readability, otherwise, if function definition is longer
+    maybe it better to put outside to keep the class interface readability user friendly
+
+[7] What is a default constructor and when do we need one?
+    A default constructor is a constructor that can be called with no arguments
+    (either because it takes no parameters, or all of its parameters have default values).
+    When Do We Need One?
+    Creating Objects Without Explicit Initial Values: When you want to instantiate an
+    object using sensible default values (e.g., setting a Date to 2026-01-01 or an int to 0).
+
+    Container Storage: Many standard library containers like std::vector<Date> v(10);
+    require elements to have a default constructor so they can construct array elements
+    in memory before you assign specific values to them.
+
+    Built-in Compiler Generation: If you don't define any constructors, the compiler
+    automatically generates a default constructor for you. However, as soon as you define
+    any custom constructor (e.g., Date(int y, int m, int d)), the compiler stops providing
+    the automatic default constructor, so you must write one manually if you still need it.
+
+[8] What is a default member initializer?
+    A default member initializer allows you to give a member variable a
+    default value directly at its declaration inside the class definition.
+
+    Prevents Uninitialized Variables: Guarantees that member variables always
+    have a safe, predictable default value even if you write multiple constructors.
+
+    Reduces Boilerplate: You don't have to repeatedly list the same default
+    values in every constructor's initializer list.
+
+    Explicit Fallbacks: If a constructor doesn't explicitly initialize a member,
+    the member automatically falls back to its default member initializer.
+
+[9] When should operator overloading be used in a program?
+Give a list of operators that you might want to overload (each with a reason).
+Which ones can you define in C++?
+    operator overloading should be used when a custom type such as class or struct
+    represents a mathematical, logical or foundational domain specific concept,
+    where standard operators feel natural, and intuitive.
+    The rule of thumb is that overloaded operators use of if their meaning is
+    obvious to someone reading the code, e.g., adding two complex numbers with
+    '+' make sense, adding DataBaseObjectConnection makes no sense.
+
+    Always preserve conventional mathematical properties that is + should perform
+    an addition like operation.
+
+    Operator that one might want to overload:
+    * operator== and operator!= (Equality/inequality): To allow intuitive value
+    comparisons between two objects that is checking if two date or strings are equal.
+
+    * operator< less-than/Comparison: Required to define a natural ordering so some objects
+    can be sorted or used as keys in standard containers like std::map or std::set.
+
+    *operator<< and operator>> Stream insertion/extraction: Enables direct printing to streams
+    (std::cout << myObj) or reading from input streams (std::cin >> myObj).
+
+    *operator+, operator-, operator*, operator/ (Arithmetic): Allows natural mathematical
+    notation for custom numeric or physical types like Complex, Vector3D, Matrix, or Money.
+
+    *operator[] (Subscript): Provides element access using array-like syntax for custom
+    collections, matrices, or string abstractions (e.g., myVector[i]).
+
+    operator() (Function Call): Turns an object into a functor (a function object),
+    allowing instances of your class to be called like functions widely used in
+    algorithms and callbacks.
+
+    operator= (Copy / Move Assignment): Controls how resources (like dynamically allocated memory
+    or file handles) are copied or transferred from one object to another.
+
+    Almost all C++ operators can be overloaded, including:
+    Arithmetic: +, -, *, /, %, ++, --
+    Relational / Logical: ==, !=, <, >, <=, >=, &&, ||, !, <=> (Three-way comparison / Spaceship operator)
+    Bitwise / Shift: &, |, ^, ~, <<, >>
+    Assignment / Compound: =, +=, -=, *=, /=, %=, <<=, >>=, &=, |=, ^=
+    Access & Other: [], (), ->, ->*, , (comma), new, delete
+
+    Operators That CANNOT Be Overloaded
+    C++ explicitly forbids overloading these 5 operators to maintain language syntax integrity:
+    . (Member access / dot operator)
+    .* (Pointer-to-member access)
+    :: (Scope resolution)
+    ?: (Ternary conditional)
+    sizeof / typeid / decltype (Compile-time evaluation operators)
+
+[10] Why should the public interface to a class be as small as possible?
+    To keep it crisp and easy to use, also allowing encapsulation as much as
+    possible keeping details hidden away and clean and easy use of the classes.
+    Fewer public functions mean fewer dependencies between your class and the
+    rest of the codebase, making changes isolated and safer.
+
+[11] What does adding const to a member function do?
+    Adding const to the end of a member function declaration tells the compiler that the function is read-only.
+    it ensure that this function doesnt modify or change value of class
+    member data, even private member variable are within the scope of the
+    class which means any function can change it. Putting cost to the tell
+    compiler check if any operation is changes data member.
+    class Date {
+        int y, m, d;
+    public:
+        int month() const { return m; } // OK: Read-only
+
+        void set_month(int new_m) const {
+            m = new_m; // COMPILE ERROR: Cannot modify member in a const function!
+        }
+    };
+
+    const Date today{2026, 9, 2};
+    int m = today.month(); // OK
+
+[12] Why are “helper functions” best placed outside the class definition?
+    Helper functions are best placed outside the class definition because
+    they strengthen encapsulation, keep the class interface minimal, and improve readability.
+
+    Key Reasons
+    * Minimizes Direct Data Access (Encapsulation):
+        -Member functions have direct access to private data members.
+        -Non-member helper functions can only interact with the class
+         through its public interface. If a function doesn't need direct
+         access to private members, making it a non-member prevents it
+         from accidentally corrupting internal class state.
+
+    * Keeps the Class Interface Small and Focused:
+        -A class should only contain functions that directly manage its
+         core data and invariants (e.g., Date::add_day()).
+        -Utility functions that build on top of the interface
+        (e.g., is_holiday(const Date& d) or next_weekday(const Date& d))
+        belong outside as helper functions.
+
+    * Prevents Namespace Pollution:
+        -Helper functions can be placed inside the same namespace as the class
+        (e.g., Chronology::is_holiday()). This allows them to be called
+        intuitively without bloating the class definition itself.
+        namespace Chronology {
+
+        class Date {
+        public:
+            int day() const;
+            int month() const;
+            int year() const;
+            // Core state management only
+        };
+
+        // HELPER FUNCTION: Outside the class!
+        // Doesn't need private access; uses public day/month/year getters.
+        bool is_new_years_day(const Date& d) {
+            return d.day() == 1 && d.month() == 1;
+        }
+
+        } // namespace Chronology
+
+[13] How does an enum class differ from a “plain” enum?
+    An enum class (strongly typed enumeration) differs from a
+    "plain" enum (unscoped enumeration) in three fundamental ways:
+    scoping:
+        enum class: are scoped, the enumeration are strictly isolated within their enum scope EnumName::Value.
+        Plain enum: are unscoped, the plan enumerators leak into the surrounding scope.
+    implicit type conversion:
+        enum class: No implicit conversion to int (they are type-safe). Required explicit 'static_case'.
+        Plain enum: implicit conversion to int (they are type-unsafe).
+    Name Collisions:
+        enum class: No risk (e.g., Color::RED and Alert::RED coexist safely)
+        Plain enum: High risk (e.g., two enums cannot share the value RED).
+    underlying storage specification:
+        enum class: Defaults to int, but can be explicitly specified (enum class Color : uint8_t). Supports forward declaration.
+        Plain enum: Set by compiler (usually int), cannot be forward-declared without specifying type.
+
+    Plain enum:
+
+        enum Color { red, green, blue };
+        enum TrafficLight { red, yellow, green }; // COMPILE ERROR: 'red' and 'green' conflict!
+
+        int x = red; // OK: Implicitly converts 'red' to int (0)
+        if (red == 0) { /* Evaluates to true! */ }
+
+    enum class (Strong Scoping & Type Safety):
+
+        enum class Color { red, green, blue };
+        enum class TrafficLight { red, yellow, green }; // OK: No conflict!
+
+        Color c = Color::red; // Must use scope resolution
+
+        // int x = Color::red; // COMPILE ERROR: Cannot implicitly convert to int
+        int x = static_cast<int>(Color::red); // OK: Explicit cast required
+
+        // if (Color::red == 0) { ... } // COMPILE ERROR: Cannot compare Color and int
