@@ -1,0 +1,424 @@
+[1] Why is I/O tricky for a programmer?
+   Core Reasons I/O is Difficult
+    Unpredictable Input & Formatting: Programs must handle vast variations
+    in how data is represented (e.g., plain text vs. binary, trailing spaces,
+    commas vs. whitespace separators, line breaks).
+
+    Device Independence vs. Reality: Streams try to treat files, keyboards, network sockets,
+    and displays identically, but physical devices have fundamentally different
+    physical properties and failure modes.
+
+    Error Handling & Edge Cases: Input can fail in countless ways malformed data,
+    unexpected non-numeric characters, EOF (End-of-File), or missing files.
+    Detecting errors and recovering gracefully without crashing or entering
+    infinite loops requires careful stream state checking (fail(), bad(), clear()).
+
+    Buffering & State Management: Data doesn't always transfer immediately;
+    streams use internal memory buffers. Managing when data actually flushes
+    to disk/screen and keeping track of stream states adds hidden complexity.
+
+[2] What does the notation << hex do?
+    It is a manipulator functions that converts input data to hex formate number.
+    Any integer output sent to the stream after hex will print in hexadecimal
+    format rather than standard decimal (base 10).
+    The hex is sticky. Once applied to a stream, all subsequent integer outputs
+    remain in hexadecimal until you explicitly switch the stream back using
+    another base manipulator (like dec or oct).
+    It only changes how numbers are displayed, not how they are stored in memory.
+
+[3] What are hexadecimal numbers used for in computer science? Why?
+    Hexadecimal is popular for outputting hardware-related information.
+    The reason is that a hexadecimal digit exactly represents a 4-bit value.
+    Thus, two hexadecimal digits can be used to present the value of an 8-bit byte,
+    four hexadecimal digits give the value of 2 bytes (that’s often a half word),
+    and eight hexadecimal digits can present the value of 4 bytes (that’s often the size of an int).
+
+[4] Name some of the options you may want to implement for formatting integer output.
+    *floor
+    *round
+    *ceil
+    *Display integers in decimal (std::dec), hexadecimal (std::hex), or octal (std::oct)
+
+[5] What is a manipulator?
+    A manipulator is an object or function used with the stream insertion (<<) or extraction (>>)
+    operators to modify the state or behavior of an I/O stream, rather than outputting data directly.
+
+    Changes formatting properties (e.g., base, alignment, precision) or triggers operational side effects
+    (e.g., flushing buffers).
+    Inserted directly into stream expressions for readable, chained formatting (std::cout << std::hex << 255;).
+
+    Unparameterized (No arguments): Include <iostream> (e.g., std::hex, std::dec, std::endl).
+    Parameterized (Takes arguments): Require <iomanip> (e.g., std::setw(8), std::setprecision(2), std::setfill('0')).
+
+[6] What is the default output format for floating-point values?
+    you can choose fixed or scientific to give the numerically most accurate representation
+    Default Precision: It defaults to 6 total significant digits (not digits after the decimal point).
+    fixed: fixed-point notation
+    scientific: use mantissa and exponent notation; the mantissa is always in the [1:10)
+    range; that is, there is a single nonzero digit before the decimal point
+
+[7] Explain what setprecision() and setw() do.
+    Floating-point values are rounded rather than just truncated,
+    and precision() doesn’t affect integer output. For example:
+    cout << "precision: " << d << " − " << setprecision(8) << d << " − " << setprecision(16) << d << '\n';
+    precision: 1234.57 − 1234.5679 −  1234.56789
+
+    When printing a lot of numbers, we often want them presented in neat rows and columns.
+    This can be achieved by specifying the width of the field into which a value is written using setw(n).
+    For example:
+    cout << "width: " << d << " − " << setw(8) << d << "−"<< setw(16) << d << '\n';
+    This prints:
+    width: 1234.57 − 1234.57 −           1234.57
+
+    Note that setw applies just to its following number or string.
+
+[8] Which of the following manipulators do not “stick”: hex, scientific, setprecision(), setw()?
+    Only setw() is non-sticky, rest effects the stream permanently until changed.
+
+[9] In format(), how do you specify where an argument is placed on output?
+    Using characters delimiter by { and } specify how argument followeing
+    the formate string are to be inserted into the output string.
+    Automatic Positioning {}: Arguments fill the placeholders in sequential
+    order from left to right.
+
+    Explicit Indexing {N}: Refers directly to the argument at 0-based index N.
+    This allows reordering, omitting, or repeating the same argument multiple times.
+
+    // 1. Automatic positional order
+    std::cout << std::format("{} is {} years old.\n", name, age);
+    // Output: Alice is 25 years old.
+
+    // 2. Explicit positional indices {0}, {1}
+    std::cout << std::format("{1} years old is {0}.\n", name, age);
+    // Output: 25 years old is Alice.
+
+    // 3. Reusing the same argument multiple times
+    std::cout << std::format("{0}! {0}! {0}!\n", name);
+    // Output: Alice! Alice! Alice!
+
+[10] Give two examples where a stringstream can be useful.
+    The stringstreams are generally used when we want to separate actual I/O from processing.
+    1. In-Memory Formatting & Type Conversions
+    When you need to construct a formatted string (mixing numbers, text, and custom manipulators) before displaying, saving, or sending it across a network.
+    #include <iostream>
+    #include <sstream>
+    #include <iomanip>
+
+    std::string format_log(int error_code, double timestamp) {
+        std::ostringstream oss;
+        oss << "[ERROR " << std::hex << std::uppercase << error_code
+            << "] at t=" << std::fixed << std::setprecision(2) << timestamp << "s";
+        return oss.str(); // Returns: "[ERROR 0x1A] at t=12.35s"
+    }
+
+    2. Parsing Structured Strings & Line-by-Line File Reading
+    When reading a file line-by-line using std::getline(),
+    you often need to parse individual tokens (numbers, words, commas) from that line string independently.
+    #include <iostream>
+    #include <sstream>
+    #include <string>
+
+    void parse_csv_line(const std::string& line) {
+        std::istringstream iss(line);
+        std::string name;
+        int age;
+        double score;
+
+        // Parses mixed types out of a single line of text
+        if (iss >> name >> age >> score) {
+            std::cout << name << " is " << age << " with score " << score << '\n';
+        }
+    }
+[11] When would you prefer line-oriented input to type-specific input?
+
+[12] What does isalnum(c) do?
+    isalnum(c) means isalpha(c)||isdigit(c); that is, “Is c either a letter or a digit?”
+
+[13] When dealing with input and output, how is the variety of devices dealt with
+in most modern computers?
+    In most modern computers, the massive variety of I/O devices
+    (keyboard, mouse, screen, SSD, USB, network card) is handled through abstraction layers
+    [ Your Program Code ] 
+       │
+       ▼
+    [ C++ I/O Streams (std::cin, std::cout, std::ifstream) ]
+       │  (Standard Stream Interface)
+       ▼
+    [ Operating System & Device Drivers ]
+       │  (Standard File Descriptors / Syscalls)
+       ▼
+    [ Hardware Devices (Disk, Terminal, Socket, USB) ]
+
+[14] What, fundamentally, does an istream do?
+    Fundamentally, an std::istream (input stream) does two things:
+    Converts Character Sequences into Typed Objects: It reads a stream of raw,
+    unformatted characters (from a source like a keyboard, file, or memory string)
+    and converts them into structured typed values
+    (such as int, double, std::string, or custom types) using extraction operators (>>).
+
+    Tracks and Manages Stream State: It manages reading operations,
+    handles whitespace skipping, maintains internal buffers, and monitors the health of the stream
+    (e.g., tracking when formatted reading fails or when End-of-File is reached via good(), fail(), and eof()).
+
+[15] What, fundamentally, does an ostream do?
+    Converts Typed Objects into Character Sequences: It takes structured values in memory
+    (such as int, double, std::string, or custom types) and formats them into a sequence of
+    characters using insertion operators (<<).
+
+    Buffers and Delivers Characters to a Destination: It manages internal output buffers to minimize
+    hardware operations and delivers the formatted character sequence to a physical destination
+    (such as a console terminal, a file on disk, or an in-memory string).
+    It also monitors stream operational health via good(), fail(), and bad().
+
+[16] What, fundamentally, is a file?
+    Fundamentally, a file is a sequence of bytes stored on a persistent storage device
+    (like an SSD, hard drive, or flash drive) that is managed by the operating system
+
+[17] What is a file format?
+    A file format is a set of rules that defines how data is organized, structured, and encoded as a sequence of bytes within a file.
+
+[18] Name four different types of devices that can require I/O for a program.
+    *Human Interface Devices (HID): Keyboards, mice, touchscreens, and displays/monitors for interacting with users.
+    *Persistent Mass Storage: Solid State Drives (SSDs), Hard Disk Drives (HDDs), and USB flash drives for reading and saving files.
+    *Network Hardware: Ethernet adapters and Wi-Fi cards for sending and receiving data across local networks or the Internet.
+    *Audio/Visual Hardware: Microphones, webcams, and speakers for streaming media input and output.
+
+    *Environmental Sensors: Thermometers, barometers, and humidity sensors (reading room climate or engine temperature).
+    *Motion & Orientation Sensors: Accelerometers, gyroscopes, and magnetometers
+        (detecting phone orientation, step counts, or drone stability).
+    *Proximity & Distance Sensors: LiDAR, RADAR, ultrasonic sensors, and infrared sensors
+        (used in self-driving cars, robotics, and phone screen proximity detection).
+    *Biometric Sensors: Heart-rate monitors, fingerprint scanners, and pulse oximeters.
+    *Optical & Light Sensors: Ambient light sensors (auto-adjusting screen brightness) and image sensors (cameras).
+
+[19] What are the four steps for reading a file?
+    1. Include the Required Header: #include <fstream>
+    to access file stream classes like std::ifstream.
+
+    2. Open the File: Create an std::ifstream object
+    and attach it to the target file path (either via constructor or using .open()).
+
+    3. Verify the Stream State: Check whether the file opened successfully using
+    .is_open() or checking the stream state (if (!ifstream_obj)) before attempting to read.
+
+    4. Read the Content & Close: Extract data using extraction operators (>>),
+    std::getline(), or .get(), checking for success or EOF, and close the stream using
+    .close() (though the destructor closes it automatically when leaving scope).
+
+    #include <iostream>
+    #include <fstream>
+    #include <string>
+
+    int main() {
+        // 1 & 2. Include header and Open file
+        std::ifstream ifs("data.txt");
+
+        // 3. Verify opening succeeded
+        if (!ifs) {
+            std::cerr << "Error: Could not open file.\n";
+            return 1;
+        }
+
+        // 4. Read content
+        std::string line;
+        while (std::getline(ifs, line)) {
+            std::cout << line << '\n';
+        }
+
+        // 4b. Close stream (optional due to RAII destructor)
+        ifs.close();
+    }
+
+[20] What are the four steps for writing a file?
+    The four essential steps for writing a file in C++ parallel the reading process:
+
+    1. Include the Required Header: Include #include <fstream> to gain access to output file streams like std::ofstream.
+
+    2. Open the File: Create an std::ofstream object and attach it to the target file path
+    (via constructor or .open()), specifying modes like std::ios::out, std::ios::app (append),
+    or std::ios::binary if needed.
+
+    3. Verify the Stream State: Check whether the file opened or was created successfully using
+    .is_open() or evaluating the stream directly (if (!ofstream_obj)).
+
+    4. Write the Content & Flush/Close: Insert data using the insertion operator (<<) or .write(),
+    and close the stream using .close() (or let RAII close and flush it automatically when going out of scope).
+    #include <iostream>
+    #include <fstream>
+
+    int main() {
+        // 1 & 2. Include header and Open file for writing
+        std::ofstream ofs("output.txt");
+
+        // 3. Verify opening succeeded
+        if (!ofs) {
+            std::cerr << "Error: Could not create or open file for writing.\n";
+            return 1;
+        }
+
+        // 4. Write data
+        ofs << "Line 1: Hello World!\n";
+        ofs << "Line 2: Result = " << 42 << '\n';
+
+        // 4b. Close stream (optional; destructor automatically flushes and closes)
+        ofs.close();
+    }
+
+[21] Name and define the four stream states.
+    good(): The stream is in a healthy, valid state.
+    No errors have occurred, End-of-File has not been reached,
+    and the next I/O operation can proceed normally.
+
+    eof(): The stream reached the End-of-File (EOF) while trying
+    to read data. This flag triggers when a read operation attempts
+    to read past the last available byte in the stream source.
+
+    fail(): A recoverable logic or formatting error occurred
+    (e.g., trying to read an integer into int x, but encountering
+    letters like "abc" in the input stream). The stream is intact,
+    but future read/write operations will be ignored until clear()
+    is called to reset the error state.
+
+    bad(): An unrecoverable, severe error occurred at the low-level
+    hardware or buffer level (e.g., read/write failure on a corrupted
+    disk drive, or hardware loss). The stream cannot be recovered.
+
+[22] Discuss how the following input problems can be resolved:
+The user typing an out-of-range value Getting no value (end-of-file)
+The user typing something of the wrong type
+
+[23] In what way is input usually harder than output?
+    Lack of Control (Human Unpredictability):
+    When writing output, your program is in total control
+    it knows the exact data types, formatting rules, and
+    constraints to apply. When reading input, you are at
+    the mercy of external sources (users, web APIs, corrupted files).
+    Users regularly type text when numbers are expected,
+    press Enter prematurely, enter out-of-range values,
+    or send unexpected control characters (like EOF).
+
+    Parsing and Validation Complexity: Output is a simple translation
+    from structured memory layout into a character sequence. Input requires
+    parsing taking an unstructured, raw sequence of characters and determining
+    if it safely maps into structured types (int, double, Date, etc.),
+    followed by validation to ensure those parsed values make sense for your program logic.
+
+    Error Detection and Recovery: If an output operation fails (e.g., full disk),
+    the program usually just reports the failure and aborts. But when input fails,
+    a program must detect what went wrong, clear the stream error flags (cin.clear()),
+    clean out invalid characters left behind in the input buffer (cin.ignore()), and
+    decide whether to prompt the user again or degrade gracefully—all without getting trapped in an infinite loop.
+
+[24] In what way is output usually harder than input?
+    Human Readability & Layout Precision: Output is designed for human consumption or strict
+    downstream parsers. Getting alignment, column widths (setw), decimal precision (setprecision),
+    line wrapping, and base representation (hex/dec) to render cleanly and consistently
+    across varying screen sizes or printed pages takes significant design effort.
+
+    Internationalization & Localization (i18n): Formatting output for global audiences
+    adds heavy complexity. Different regions require different date formats
+    (MM/DD/YYYY vs DD/MM/YYYY), currency symbols, digit separators
+    (commas vs. periods: 1,000.00 vs 1.000,00), text directionality
+    (left-to-right vs. right-to-left), and character encodings (UTF-8, UTF-16).
+
+    Buffering & Resource Overhead: Output operations are physically slow compared to CPU operations.
+    Managing stream buffering (flush, endl) to optimize disk/network I/O performance without losing
+    data during a crash requires managing internal memory queues, flushing policies, and disk synchronization.
+
+    Irreversible Side Effects: Input operations are generally read-only and non-destructive to external systems.
+    Output operations alter state on external media overwriting existing files, writing to databases, or
+    sending network packets meaning an error in output formatting or logic can permanently corrupt data or external state.
+
+[25] Why do we (often) want to separate input and output from computation?
+    Separating I/O from computation is a core principle of software design
+    (often referred to as the Single Responsibility Principle or Decoupling).
+    We do this for four key reasons:
+    1. Reusability and Portability: If core business logic relies directly on
+    std::cin or std::cout, that code is locked to the console.
+    By separating them, the same computational algorithm can be reused across different
+    interfaces whether a command-line tool, a Graphical User Interface (GUI),
+    a mobile app, a web API, or a unit test fil without changing a single line of logic.
+
+    2. Testability: Pure computational functions that take parameters and return values are
+    extremely easy to unit test. If I/O is mixed directly into calculation functions,
+    testing requires setting up fake user inputs and capturing console output streams rather
+    than simply checking input/output return values.
+
+    3. Maintainability and Modularity: Input formats change frequently (e.g., switching from reading
+    text files to reading JSON or database entries). When I/O is isolated, changes to formatting or
+    storage mechanics don't risk breaking or altering core calculations.
+
+    4. Simpler Error Handling: Isolating I/O allows input validation to happen entirely before
+    computation begins. Functions doing calculations can assume their inputs are clean and valid,
+    avoiding cluttered code where algorithm logic is constantly interrupted by stream state checks (cin.fail()).
+
+[26] What are the two most common uses of the istream member function clear()?
+    The two most common uses of the clear() member function on an istream are:
+
+    1. Resetting Stream Error Flags After an Input Failure
+    When an input operation fails (e.g., trying to read a string like "abc" into an int),
+    the stream sets its error bit (failbit) and stops accepting any further input.
+    Calling clear() resets all error state flags back to goodbit,
+    allowing future read operations to proceed once invalid input is cleared.
+
+    2. Clearing the eofbit to Reuse a Stream: When reading a file or stream until
+    the End-of-File is reached, the stream sets its eofbit (and often failbit).
+    If you want to seek back to the beginning of the file (using seekg(0))
+    or read from the same stream again, you must call clear() first.
+    Without resetting the flags, seek operations and subsequent reads will fail silently.
+
+[27] What are the usual function declarations for << and >> for a user-defined type X?
+    For a user-defined type X, the stream operators operator<< (insertion) and
+    operator>> (extraction) are declared as non-member functions
+    // Insertion operator (Output)
+    std::ostream& operator<<(std::ostream& os, const X& obj);
+
+    // Extraction operator (Input)
+    std::istream& operator>>(std::istream& is, X& obj);
+
+[28] How do you specify where an argument is inserted into a format string in format()?
+    You specify placement in std::format() using curly brace placeholders {} inside the format string.
+    Placement Options
+    Automatic Positional ({}): Arguments are inserted sequentially from left to right in the order provided.
+    Explicit Indexing ({N}): Refers to the argument at 0-based index N. Allows reordering, repeating, or omitting arguments.
+    Named Arguments ({name} in C++26): Bind arguments directly to names using formatting specifiers like std::format_arg.
+
+[29] What is the notation for bases of decimal values in format()?
+    In std::format(), you control base notation using type specifiers
+    placed after a colon inside the {} placeholders:
+
+    :d – Decimal (default for integers)
+
+    :x – Hexadecimal (lowercase digits: a, b, c, d, e, f)
+
+    :X – Hexadecimal (uppercase digits: A, B, C, D, E, F)
+
+    :o – Octal (base 8)
+
+    :b – Binary (lowercase: 0b...)
+
+    :B – Binary (uppercase: 0B...)
+
+    Adding an hash # prefix includes the standard base prefix (0x, 0X, 0, 0b, 0B) in the output string.
+
+[30] How do you specify the precision of floating-point values in format()?
+    In std::format(), precision for floating-point values is specified using a dot (.)
+    followed by an integer inside the {} placeholder specifier
+    (e.g., "{:.2f}").Key Formatting Options{:.N} (Default/General Format):
+    Sets precision to N total significant digits.{:.Nf} (Fixed-Point Format):
+    Sets precision to exactly N digits after the decimal point.{:.Ne} (Scientific Format):
+    Sets precision to exactly N digits after the decimal point in scientific notation.
+    // Fixed-point notation (2 decimal places)
+    std::cout << std::format("{:.2f}\n", pi); // Output: 3.14
+
+    // Fixed-point notation (4 decimal places)
+    std::cout << std::format("{:.4f}\n", pi); // Output: 3.1416d
+
+    // General format (4 significant digits)
+    std::cout << std::format("{:.4}\n", pi);  // Output: 3.142d
+
+    // Scientific format (3 decimal places)
+    std::cout << std::format("{:.3e}\n", pi); // Output: 3.142e+00
+
+    You can combine formatting directives Position and precision. Inside {width.precisionType}: For example:
+    cout << format("− {:12} − {:12.8f} − {:30.20e} −\n", d, d, d);
