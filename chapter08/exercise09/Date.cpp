@@ -5,13 +5,13 @@ namespace PPP_Lib {
     bool operator==(Year a, Year b){
         return a.y == b.y;
     }
-    bool operator!=(Year a, Year b){
-        return !(a == b);
-    }
     bool operator==(Month a, Month b){
         return a == b;
     }
-    bool operator!=(Month a, Month b){
+    bool operator!=(Year a, Year b){
+        return !(a == b);
+    }
+     bool operator!=(Month a, Month b){
         return !(a == b);
     }
     Month& operator++(Month& m){    // Prefix increment
@@ -168,7 +168,7 @@ int day_of_year(const Date& d) {
 
 int week_of_year(const Date& d) {
     int day_number = day_of_year(d);
-    int jan1_weekday = to_int(day_of_a_week(Date(d.get_year(), Month::jan, 1))); // unused: not yet factored into the week calc below
+    //int jan1_weekday = to_int(day_of_a_week(Date(d.get_year(), Month::jan, 1))); // unused: not yet factored into the week calc below
     return (day_number + 6) / 7; // round up so a partial first week still counts as week 1
 }
 
