@@ -1,0 +1,364 @@
+[1] What is an application domain?
+    An application domain (often called a problem domain)
+    is the specific field, area of expertise, or real-world
+    activity for which a software program is designed to solve problems.
+
+    Instead of referring to programming concepts (like loops, pointers,
+    or memory allocation), the application domain is defined by the concepts,
+    terminology, rules, and constraints of the user's field.
+
+    * Domain Vocabulary: The specific terms used by experts in that field
+    (e.g., "interest rate" in finance, "polygon mesh" in 3D graphics,
+    "patient medical history" in healthcare).
+
+    * Domain Invariants & Rules: The real-world laws or logic that the
+    software must enforce (e.g., money cannot have fractional cents in cash
+    transactions, mass cannot be negative in a physics simulation).
+
+    Domain Experts: The non-programmer specialists who understand how that
+    field works and define what the software needs to accomplish
+
+[2] What are ideals for naming?
+    The core ideal for naming in C++ is clarity and intent. A name should
+    directly express what an entity is or does within its context, making
+    the code self-documenting for anyone reading it.
+
+    Express Intent: Choose names that reveal the purpose. A variable named
+    interest_rate is far clearer than r or temp.
+
+    Be Consistent: Stick to uniform conventions across a codebase
+    (e.g., camelCase vs. snake_case, standard prefixes for member variables).
+
+    Avoid Cryptic Abbreviations: Prefer denominator over denm, or index over
+    idx_val_num.
+    Common Naming Conventions in C++
+    Entity Type             Convention Style                Example
+    Classes / Types         PascalCase (Noun)               Rational, Money, InputStream
+    Functions / Methods     snake_case or camelCase (Verb)  normalize(), calculate_balance()
+    Variables               snake_case or camelCase (Noun)  total_cents, user_name
+    Constants               ALL_CAPS or k prefix            MAX_BUFFER_SIZE, kPi
+
+[3] What can we name?
+    In C++, we can name almost every construct we define or interact with using identifiers.
+    Variables & Objects: Standard storage units and class instances
+    (total_cents, pi, account_balance).
+
+    Types: Built-in types, classes, structs, unions, enums, and type aliases
+    (Rational, Money, std::string, using Cents = long int).
+
+    Functions & Operators: Member functions, free functions, and overloaded operators
+    (normalize(), calculate_tax(), operator+).
+
+    Namespaces: Logical groupings that prevent naming collisions
+    (std, graphics, financial_utils).
+
+    Constants & Enum Values: Immutable values and symbolic constants
+    (MAX_BUFFER_SIZE, Color::Red).
+
+    Templates & Template Parameters: Generic blueprints and type placeholders
+    (template <typename T>).
+
+    Labels: Jump targets for control flow
+    (goto targets or case labels in switch statements).
+
+[4] What services does a Shape offer?
+    The Shape class acts as an abstract interface base class.
+    It handles all common properties (color, points, style, window linking)
+    while delegating the specific rendering mechanics of concrete shapes
+    (like Circle, Rectangle, or Polygon) to their respective derived classes.
+
+[5] How does an abstract class differ from a class that is not abstract?
+    An abstract class cannot be instantiated directly and serves exclusively
+    as a base class interface.
+
+    Abstract Class vs. Concrete Class
+
+    Property: Direct Instantiation
+    Abstract Class: Forbidden. Cannot create objects directly (Shape s; is a compile error).
+    Concrete Class: (Not Abstract) Allowed. Objects can be instantiated (Rectangle r;).
+
+    Property: Purpose
+    Abstract Class: Defines a generic interface for derived classes to implement.
+    Concrete Class: Provides a complete, usable implementation
+
+    Property: Defining Condition
+    Abstract Class: Must contain at least one pure virtual function (virtual void draw() = 0;).
+    Concrete Class: Has no pure virtual functions (all functions are fully defined).
+
+    Property: Virtual Functions
+    Abstract Class: May have regular virtual functions, but must have at least one pure virtual function.
+    Concrete Class: Can have regular virtual functions (or none at all).
+
+    Regular Virtual Function: virtual void draw();
+        Provides a default implementation.
+        A class with only regular virtual functions is concrete, meaning you
+        CAN still create objects of it.
+
+    Pure Virtual Function: virtual void draw() = 0;
+        Has no implementation in the base class (indicated by = 0).
+        The = 0 syntax is what forces the compiler to mark the class as abstract.
+        Derived classes must override all pure virtual functions to become concrete.
+
+[6] How can you make a class abstract?
+    To make a class abstract in C++, you declare at least one pure virtual function
+    in its definition by appending = 0 to the virtual function's declaration.
+
+    Pure Virtual Function: virtual void draw() = 0;
+        Has no implementation in the base class (indicated by = 0).
+        The = 0 syntax is what forces the compiler to mark the class as abstract.
+        Derived classes must override all pure virtual functions to become concrete.
+
+[7] What is controlled by access control?
+    There are three access control, Public, protected and private.
+
+    Member Visibility & Accessibility:
+        public: Accessible by any function or class anywhere in the program. Forms the class interface.
+        private: Accessible only by member functions and friends of that specific class.
+        protected: Accessible by member functions of the class itself, friends, and derived classes,
+        but hidden from external code.
+
+    Inheritance Relationships:
+        Access control also determines how derived classes inherit members from a base class
+        (public, protected, or private inheritance), controlling whether the base interface
+        remains public to the outside world.
+
+[8] What good can it do to make a data member private?
+    Making a data member private enforces encapsulation and data hiding,
+    which give several crucial software design benefits.
+
+    * Protecting Class Invariants (Preventing Invalid States): Ensure the
+    external code cannot corrupt object data.
+
+    * Freedom to change internal Implementation: Hides how data is stored under
+    the hood. As long as public functions work the same, you can refactor internal
+    member variables without breaking any external code using your class.
+
+    * Controlling Read/Write Access: using explicit getters/setter to allow
+    read-only or write-only interfaces enabling validation whenever values are altered.
+    also connects to earlier point.
+
+[9] What is a virtual function and how does it differ from a non-virtual function?
+    A virtual function provides a default functionality in a base class that can be
+    used by the driver class, this ensure uniform interface with different underlying
+    behaviors across derived classes.
+
+    Virtual functions are dynamic dispatch or have runtime binding, which means
+    when we call a virtual function through a base class pointer or reference, c++
+    checks tha actual runtime object being pointed to and calls its overridden function.
+
+    Where as a non-virtual functions are static binding or have compile time resolution.
+    When we call a non-virtual function through a pointer or reference, C++ checks the
+    declared variable type at compile time rather than looking at what object is actually
+    stored in memory.
+
+
+[10] What is a base class?
+    A base class provides a common interface and shared functionality for derived classes.
+    An abstract base classes (those containing at least one pur virtual function = 0) prevent
+    object creation otherwise a concrete base class can have its own objects instantiated.
+
+    A base class is a class from which other classes derive properties and behavior.
+    It sits at the top or middle of an inheritance hierarchy to establish shared characteristics.
+    class C         --> Class B         --> Class D
+    Base class to B     Base class to D     Derived Class from B which also means C
+    There are few types of inheritance
+
+    Single inheritance Class A to B
+
+    Multi-level inheritance
+        Class C         --> Class B         --> Class D
+        Class A |
+                 ---> Class F
+        Class E |
+
+    Hierarchical Inheritance
+                        --> Class D
+                        |
+            --> Class B
+            |           |
+            |           --> Class E
+    Class A
+            |           --> Class F
+            |           |
+            --> Class C
+                        |
+                        --> Class G
+    Hybrid inheritance (a combination of Hierarchical and Multiple)
+
+    class C {
+    public:
+        void interface_c() {}
+    };
+
+    class B : public C { // B derives from C
+    public:
+        void interface_b() {}
+    };
+
+    class D : public B { // D derives from B (and transitively inherits C)
+    public:
+        void interface_d() {}
+    };
+
+[11] What makes a class derived?
+    A class is a derived class when it explicitly inherit member, interface
+    and characteristics from another existing class also known as its base
+    class.
+
+[12] What do we mean by object layout?
+    Object layout is the layout of the object in memory.
+    Data members are stored sequentially in the order they are declared inside the Class
+    When a class is derived from a base class, the compiler places a complete sub-object
+    containing the bass class´s data member at the very beginning of the derived object
+    memory space.
+    if a class contains virtual function, the compiler place a virtual pointer vptr
+    into that object layout. This pointer target the class´s vtable (virtual function table)
+    to handle virtual function calls dynamically at runtime.
+
+[13] What can you do to make a class easier to test?
+    Design a class for decoupling, predictability and small responsibilities
+
+    the Single Responsibility Principle: Keep classes small and focused on one task.
+    A class that parses input, computes values, and writes output to disk is difficult to unit test.
+    Separating parsing, calculation, and I/O allows testing each piece in isolation.
+
+    Depend on Abstract Interfaces (Base Classes): Accept base class references or pointers
+    rather than concrete classes. This allows unit test suites to pass lightweight mock or
+    fake objects into the class under test without relying on external files or networks.
+
+    Minimize Internal State & Avoid Side Effects: Favor pure or const member functions where possible.
+    Functions that take input arguments and return results without modifying hidden global variables or
+    global state are trivial to test deterministically.
+
+    Provide Access to Class State via Clean Public Interfaces: Ensure the class offers public getter
+    methods or invariant inspectors so test frameworks can assert that the object transitioned into
+    the expected valid state after an operation
+
+[14] What is an inheritance diagram?
+     An inheritance diagram (often represented using UML—Unified Modeling Language) is a visual
+     representation showing the structural relationships and hierarchy between base classes and
+     derived classes in object-oriented software design.
+
+        Classes as Boxes: Each class is represented by a rectangular box divided into sections
+        (showing the Class Name, Data Members, and Member Functions).
+
+        The Inheritance Arrow (Generalization): Inheritance is represented by a solid line with a
+        hollow arrowhead pointing from the derived class toward the base class (indicating that the
+        derived class extends or is-a specialization of the base class).
+
+        Hierarchy Direction: Base classes are positioned higher up in the diagram.
+        Derived classes sit below their base classes, visually organizing the "is-a" relationships.
+
+    Why Use Inheritance Diagrams?
+        System Architecture Mapping: Allows developers to visualize the entire class hierarchy of a
+        large framework at a glance before writing code.
+
+        Interface Tracking: Helps identify abstract base classes and track which pure virtual
+        functions derived classes must override.
+
+        Communicating Design Intent: Serves as a universal language between software architects,
+        developers, and domain experts.
+
+[15] What is the difference between a protected member and a private one?
+                Accessible within Same class    Accessible by Derived Class     Accessible by outside
+    private             Yes                                 No                          No
+    protected           Yes                                 Yes                         No
+
+    private Members: Accessible only by member functions (and friends) of the specific class
+    in which they are declared. Derived classes inherit private data members in memory layout,
+    but member functions in the derived class cannot access them directly.
+
+    protected Members: Accessible by member functions (and friends) of the defining class AND
+    any derived classes. Hidden from general client code outside the class hierarchy.
+
+[16] What members of a class can be accessed from a class derived from it?
+    A derived class can access all public and protected members of its base class
+    (assuming standard public or protected inheritance). It cannot directly access private members.
+
+[17] How does a pure virtual function differ from other virtual functions?
+    Regular Virtual Function: Expresses a contract of "Here is a default behavior,
+    but derived classes are welcome to customize or override it if needed."
+
+    Pure Virtual Function: Expresses an interface contract of "I am defining an interface
+    requirement here, but every concrete derived class MUST supply its own specific implementation."
+
+[18] Why would you make a member function virtual?
+    We make a member function virtual function when we want to
+    crete runtime polymorphism and allow derived classes to override
+    its behavior while perserving a uniform base interface.
+
+    *Dynamic Dispatch: When called through a base class pointer or reference (Base* ptr),
+    C++ looks up the actual object's dynamic type in memory using a virtual pointer (vptr)
+    and vtable to invoke the derived implementation.
+
+    *Default Implementation: It provides a sensible default behavior in the base class that
+    derived classes can override if needed, but aren't strictly required to.
+
+    *Polymorphic Destruction: Destructors in base classes with virtual functions must be virtual
+    to ensure derived class resources are properly cleaned up when deleted via a base pointer (delete ptr;).
+
+[19] Why would you not make a member function virtual?
+    We keep a member function non-virtual when the behavior is fixed across the entire class
+    hierarchy or when performance and layout constraints dominate:
+
+    *Fixed Behavior (Non-overridable Invariant): The function performs a core task that must work
+    identically for all derived classes (e.g., getter methods, internal utility routines, or
+    non-virtual interface functions).
+
+    *Avoid Overhead (Performance): Calling a non-virtual function uses direct static binding at compile
+    time (a direct CPU jump instruction). Virtual functions require indirect vtable pointer lookups and
+    prevent compiler inlining.
+
+    Memory Constraints: Adding even one virtual function to a class adds a hidden vptr
+    (typically 8 bytes on 64-bit systems) to every instance of the object. For lightweight
+    types stored in massive quantities (like a 2D Point or Color struct), this memory bloat
+    can be significant.
+
+    Class Not Designed for Inheritance: Concrete value types (like Rational or Money) are meant to be used
+    by value and should not be derived from.
+
+[20] Why would you make a virtual member function pure?
+    We append = 0 to a virtual member function (virtual void draw() = 0;)
+    when we want to enforce an interface contract without providing a default implementation:
+
+    *Mandatory Implementation: It forces every concrete derived class to supply its own specific
+    implementation. If a derived class fails to override a pure virtual function, it remains
+    abstract and cannot be instantiated.
+
+    Abstract Class Design: It marks the base class as an abstract base class (or pure interface),
+    preventing clients from accidentally creating meaningless generic objects (e.g., instantiating
+    a plain Shape that has no geometric body).
+
+    Eliminates Dummy Code: Prevents writing stub function bodies in base classes that serve no real
+    purpose other than satisfying the compiler.
+
+[21] What does overriding mean?
+    Overriding means redefining a base class's virtual member function inside a derived class using
+    the exact same signature (name, parameter list, and return type).
+    It replaces the default implementation provided by the base class with a customized implementation
+    for the derived class when called via dynamic dispatch.
+
+[22] Why should you always suppress copy operations for a class in a class hierarchy?
+    suppress means restrict
+    We should suppress (or restrict) copy operations for base classes in an object hierarchy
+    primarily to prevent object slicing and because polymorphic objects represent identities, not concrete values.
+    
+    Completely Disable Copying (Standard Practice)
+        Shape& operator=(const Shape&) = delete;
+    Virtual Cloning Pattern (If Duplication Is Needed)
+        If derived objects do need to be duplicated through a base class pointer,
+        define a pure virtual clone() member function instead of relying on copy operations.
+    class Shape {
+    public:
+        virtual std::unique_ptr<Shape> clone() const = 0; // Deep polymorphic copy
+    };
+
+    class Circle : public Shape {
+    public:
+        std::unique_ptr<Shape> clone() const override {
+            return std::make_unique<Circle>(*this); // Copies full Circle state cleanly
+        }
+    };
+[23] How does interface inheritance differ from implementation inheritance?
+
+[24] What is object-oriented programming?
