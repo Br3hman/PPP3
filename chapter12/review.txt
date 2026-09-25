@@ -342,7 +342,7 @@
     suppress means restrict
     We should suppress (or restrict) copy operations for base classes in an object hierarchy
     primarily to prevent object slicing and because polymorphic objects represent identities, not concrete values.
-    
+
     Completely Disable Copying (Standard Practice)
         Shape& operator=(const Shape&) = delete;
     Virtual Cloning Pattern (If Duplication Is Needed)
@@ -359,6 +359,61 @@
             return std::make_unique<Circle>(*this); // Copies full Circle state cleanly
         }
     };
+
 [23] How does interface inheritance differ from implementation inheritance?
+    Lets break it down,
+    what is inherited with
+        interface inheritance?
+            Function signature only a contract of what operation must exists
+        implementation inheritance?
+            Function bodies and data member the actual code and state variables.
+
+    C++ Mechanism with
+        interface inheritance?
+            Pure virtual function (virtual void draw() = 0;) inside abstract base classes.
+        implementation inheritance?
+            Non-virtual functions, or regular virtual functions with default bodies.
+
+    Main Objective
+        interface inheritance?
+            Enable polymorphism so different derived Classes can be treated uniformly via base pointer/reference
+        implementation inheritance?
+            Promote code reuse so Derived classes do not duplicate logic or state variables.
+
+    Derived Class Duty
+        interface inheritance?
+            Drive class must implement all pure virtual functions to become concrete.
+        implementation inheritance?
+            Optional: The derived class inherits existing behavior and can choose to whether to overridden default implementation
+
+    Coupling Level
+        interface inheritance?
+            implementation details inside derived classes do not effect callers using the base interface.
+        implementation inheritance?
+            Tighter coupling: Derived classes depend directly on the base class´s internal state and implementation logic
 
 [24] What is object-oriented programming?
+    Object-Oriented Programming (OOP) is a programming paradigm based on the concept of objects,
+    which bundle data (attributes) together with functions (methods) that operate on that data.
+    The Four Pillars of OOP
+        1. Encapsulation (Data Hiding):
+            * Combines data members and functions into a single class unit.
+            * Restricts direct access to private data (via access controls like private),
+            enforcing class invariants (such as preventing a zero denominator in Rational or
+            enforcing (4/5) commercial rounding in Money).
+        2. Abstraction:
+            * Exposes a clean, essential public interface while hiding complex implementation details.
+            * Users interact with high-level contracts (e.g., calling shape->draw()) without needing to
+            know how memory or low-level rendering works under the hood.
+        3. Inheritance:
+            * Enables new classes (derived classes) to inherit properties and methods from existing ones (base classes).
+            * Models "Is-A" relationships, reduces code duplication, and establishes hierarchical relationships.
+        4. Polymorphism (Dynamic Dispatch):
+            * Allows objects of different derived classes to respond differently to the same uniform interface function call.
+            * In C++, runtime polymorphism is achieved through virtual functions resolved at runtime using virtual tables (vtables).
+    Why Use OOP?
+        * Maintainability & Modular Design: Modifying a class's internal implementation does not break external code
+        as long as its public interface remains unchanged.
+        * Extensibility: New features can be added by creating new derived classes without altering existing code.
+        * Direct Application Domain Mapping: OOP makes it intuitive to model domain entities directly as classes
+        (Shape, Window, BankAccount), making large codebases easier to reason about and test
