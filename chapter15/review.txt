@@ -1,0 +1,382 @@
+[1] Why do we need data structures with varying numbers of elements?
+    We need data structures with varying numbers of elements that is
+    dynamic data structures, likes std::vector or std::list, because
+    the amount of data a program needs to process is rarely known at
+    compile time and changes continuously while the program runs.
+
+[2] What four kinds of storage do we have for a typical program?
+    A typical c++ program uses four distinct kind of memory storage
+    to manage code, variables and dynamically requested resource:
+    1. Code storage (Text segment / code segment)
+        Purpose: Holds the actual compiled machine code instructions executed by the CPU.
+        Lifetime: Persists for the entire duration of the program execution.
+        Characteristics: Read-only to prevent self-modifying code bugs or security exploits.
+
+    2. Static storage (Data segment & BSS):
+        Purpose: Stores global variables, static class/function variables, and string literals.
+        Lifetime: Allocated when the program starts and destroyed when the program terminates.
+        Characteristics: Fixed size determined at compile time.
+
+    3. Stack Storage (Automatic Storage):
+        Purpose: Stores local variables, function arguments, and functions call return
+            addresses (Stack frames).
+        Lifetime: Automatically allocated when entering a function scope and automatically
+            deallocated (popped off the stack) when exiting that scope.
+        Characteristics: Extremely fast, but fixed in size (susceptible to stack overflow
+            if deep recursion occurs).
+
+    4. Free store (Heep storage / dynamic storage)
+        Purpose: Memory requested explicitly at runtime using operators like new (or function like malloc)
+        Lifetime: explicitly controlled by the programmer, remains allocated until explicitly freed
+            using delete (or deallocated automatically when smart pointers like std::unique_ptr go out of scope)
+
+[3] What is the free store? What other name is commonly used for it?
+What operators support it?
+    The free store is a pool of system memory available to a C++ program for
+    dynamically allocating objects at runtime whose lifetimes are independent of
+    the current function call stack.
+
+    Common Alternative Name:
+        It is most commonly called the Heap or Dynamic Memory.
+        Technical Note: In the C++ standard, "free store" refers specifically to memory
+        managed by new and delete, whereas "heap" traditionally refers to C-style memory
+        managed by malloc() and free(). In everyday practice, C++ programmers use the
+        terms interchangeably.
+
+    Supporting Operators:
+        new: Allocates memory for a single object on the free store, invokes its constructor,
+        and returns a pointer to it.
+        delete: Invokes the object's destructor and releases the allocated memory back to the free store.
+
+        new[]: Allocates memory for a contiguous array of objects on the free store.
+        delete[]: Invokes destructors for each element in an array and frees the array memory allocation.
+
+[4] What is a pointer?
+    A pointer is a data type that holds the memory address of an object rather
+    than the value of the object itself.
+
+    Core Characteristics of a Pointer
+    1. Holds Memory Addresses: Instead of directly containing data like an int or a double, a pointer
+       stores a numerical address pointing to where that data lives in computer memory (RAM).
+
+    2. Type Aware (T*): A pointer is declared with a specific type (e.g., int*, Shape*, double*).
+       The type tells the compiler how many bytes to read and how to interpret the bit pattern at
+       that targeted memory address when dereferenced.
+
+    Key Operations:
+        Address-of Operator (&): Used to retrieve the memory address of an
+            existing object (e.g., int* p = &x;).
+        Dereference Operator (*): Used to access or modify the object stored
+            at the memory location held by the pointer (e.g., *p = 10;).
+    Primary Uses in C++
+        Dynamic Memory Allocation: Used to refer to memory allocated on the
+            free store (heap) using new or managed via smart pointers
+            (std::unique_ptr, std::shared_ptr).
+        Polymorphism: Enables dynamic dispatch when invoking virtual functions
+            through base class pointers (Shape* s = new Circle();).
+        Navigating Contiguous Memory: Allows traversing arrays, buffers, and
+        low-level system structures efficiently via pointer arithmetic.
+
+[5] What is a dereference operator and why do we need one?
+    Dereference Operator (*) tells c++ to go to the memory address stored
+    inside a pointer and access the actual value kept there.
+
+    Pointer ( p ): holds a memory address e.g., 0x7ff ...
+    Dereference Pointer (*p): reads or change the actual data sitting at the Address
+
+    int var = 10;
+        What happens: The operating system allocates a 4-byte box in RAM
+        (for example, at memory address #2002). The value 10 is written inside that box.
+
+    int* ptr = &var;
+        What happens: The address-of operator (&) fetches the address #2002.
+        The pointer ptr (which lives in its own separate memory box, say at #3008)
+        stores #2002 as its data value.
+
+    *ptr = 20;
+        What happens: The dereference operator (*) tells the CPU: "Look inside ptr to
+        find the address #2002, navigate to that box in memory, and overwrite whatever
+        is inside with 20."
+
+    As a result, evaluating var afterwards yields 20.
+
+[6] What is an address? How are memory addresses manipulated in C++?
+    An address is an integer value (typically represented in hexadecimal format,
+    such as 0x7ffc82a1b4c0) that identifies a specific byte location in computer memory (RAM)
+    Byte Addressing: Computer memory is organized as a giant contiguous sequence of single-byte
+    storage cells. Each cell has its own unique numeric index, its memory address.
+    First Byte Rule: When an object spans multiple bytes (for example, a 4-byte int or
+    an 8-byte double), the object's memory address is defined as the address of its first byte in memory.
+
+    How Memory Addresses Are Manipulated in C++
+    C++ provides explicit features to fetch, store, inspect, and navigate memory addresses:
+
+    1. Obtaining an Address (& operator): Use the address-of operator (&) to retrieve the
+    starting memory address of any named variable (e.g., &var).
+
+    2. Storing Addresses (Pointers): Addresses are stored inside pointer variables (T*).
+    The pointer type T tells the compiler how many bytes to read starting at that base address.
+
+    3. Navigating Memory (Pointer Arithmetic): Address manipulation is typed and scaled
+    automatically by the size of the target type:
+        ptr + 1: Advances the memory address by sizeof(T) bytes
+        (e.g., adding 1 to an int* increases the raw address by 4 bytes).
+        ptr2 - ptr1: Computes the number of elements (not raw bytes)
+        between two pointers pointing into the same array.
+
+    4. Array Subscripting ([] as Address Arithmetic): Array indexing is syntactic sugar for
+    address manipulation. In C++, arr[i] is defined as *(arr + i), it shifts the base address
+    arr forward by i elements and dereferences the resulting address.
+
+[7] What information about a pointed-to object does a pointer have?
+What useful information does it lack?
+    A raw pointer in c++ is a lightweight variables holding a single memory address,
+    which determines both what it knows and what vital information it lacks.
+    What Information a Pointer has
+    1. The Starting Memory Address: It knows the exact byte location in RAM where the
+       pointed-to object begins (e.g., 0x7ffc82a1b4c0).
+    2. The Type of the Object (Compile-Time Information):
+        Through its type declaration (T*), the compiler knows:
+            Size: How many bytes to read or write when dereferenced (sizeof(T)).
+            Interpretation: How to decode those raw bits (e.g., an int vs. a float vs. a Shape object).
+            Pointer Arithmetic Scaling: How many bytes to step forward or backward
+                when adding or subtracting numbers (ptr + 1).
+
+    What Useful Information a Pointer lacks: Raw pointers carry no extra runtime metadata
+    ("chummy metadata"), meaning they lack several critical safety pieces:
+        1. Ownership / Lifetime:
+            It does not know whether it owns the memory (and is responsible for calling delete)
+            or if it merely borrows a view of it.
+            It cannot tell if the object it points to is still valid or has already been freed (dangling pointer).
+
+        2. Array Bounds / Element Count:
+            If a pointer points to the first element of an array, it has no idea how many
+            elements exist in that array. Passing a raw pointer to a function forces you to
+            pass the array size separately.
+
+        3. Validity State (Null vs. Garbage):
+            An uninitialized raw pointer contains arbitrary garbage bits.
+            The pointer itself cannot tell whether it holds a valid address,
+            an uninitialized value, or a freed location unless explicitly set to nullptr.
+
+        4. Allocation Region:
+            It cannot tell whether the target object lives on the stack, in static storage, or on the free store (heap).
+
+
+[8] What can a pointer point to?
+    1. A pointer can point to "Nothing" that is a nullptr to indicate that it
+        is currently target no valid object.
+    2. A pointer can point to variables on stack (Automatic storage) containing addresses
+        of local variable inside a function scope(e.g., int x = 5; int* p = &x;).
+    3. A pointer can point to objects on the free store / Heap storage, dynamically allocated
+        memory created using new or new[] (e.g., double* p = new double(3.14);).
+    4. A pointer can point to Global and static variables (static storage), this could include
+        global variables, static class members, or string literals stored in the data segment.
+    5. Element of an array or data structure: Individual elements within contiguous buffers
+        (e.g., pointing to the 3rd element of an array or vector buffer).
+    6. Functions (Code / Text Segment): Function Pointers can store the memory address of
+        executable machine code routines (e.g., callback functions or ISR handlers in micro controllers).
+    7. Other Pointers (Pointers to Pointers): A pointer can hold the address of another
+        pointer variable (e.g., int** pp = &p;).
+    8. Hardware / Memory-Mapped I/O Registers (Embedded Systems & Robotics): Direct fixed memory addresses
+        mapped to micro controller hardware registers (e.g., volatile uint32_t* GPIO_PORTA = (uint32_t*)0x40020000;).
+
+[9] What is a leak?
+    A memory leak occurs when memory is allocated on the free store (heap) using new (or malloc),
+    but the program fails to release that memory back to the system when it is no longer needed
+    and all pointers referencing that memory are lost.
+
+[10] What is a resource?
+    In computing resources within a system are the asset with limited
+    availability that a program must acquire before using and must
+    release back to the system when finish using it.
+
+    Resource example: RAM capacity, available CPU threads, open file handles, hardware ports
+
+    Golden Rule for C++ RAII (Resource Acquisition Is Initialization):
+        Resource are acquired in a class constructor
+        Resource are automatically released in the class destructor
+
+[11] What is another term for “free store”?
+    Heap Storage ( coming for C programer)
+
+[12] How can we initialize a pointer?
+    We should use nullptr to initialize a pointer,
+    using NULL or 0 are bad habit or a really bad respectivly,
+    or we should initialize with an address of an object we want to
+    point to,
+
+    1. Initializing with nullptr (Best Practice for Unbound Pointers):
+            int* ptr1 = nullptr;
+    nullptr has a distinct type (std::nullptr_t) that avoids signature
+    ambiguity when calling overloaded functions.
+
+    2. Initializing with the Address of an Existing Object:
+        Binds the pointer immediately to a valid object on the stack,
+        in static storage, or inside a data structure.
+            int x = 10;
+            int* ptr2 = &x;
+    3. Initializing with Dynamic Memory (new)
+            int* ptr3 = new int(42);
+        Allocates memory directly on the free store and
+        stores its starting address in the pointer.
+
+    4. Why 0 and NULL Are Bad Habits
+        int* p1 = 0;    // BAD: 0 is an integer literal, leading to type confusion
+        int* p2 = NULL; // BAD: NULL is a macro expanded to 0 or (void*)0
+
+    Rule of Thumb: Never leave a raw pointer uninitialized (int* ptr;).
+    Uninitialized pointers hold garbage memory addresses and lead to undefined
+    behavior or segmentation faults when dereferenced. Always assign them an object
+    address, dynamic memory, or nullptr.
+
+[13] What is a null pointer? When do we need to use one?
+    A null pointer a special Pointer, it has a distinct type
+    (std::nullptr_t) that avoids signature ambiguity when calling overloaded functions.
+
+    1. Safe Initialization: To avoid leaving raw pointers uninitialized with random garbage addresses
+    2. Terminating Pointer-Based Data Structures: Used as a sentinel marker to signify the end of
+    linked lists, binary trees, or dynamic node chains.
+    3. Optional / Conditional Parameters and Return Values:
+        Return Value: A search function (e.g., searching a spatial map or object database)
+            can return nullptr to indicate that the target item was not found.
+        Optional Argument: Passing nullptr into a function tells the routine that
+            a parameter is optional or omitted.
+    4. Resource State Management (Post-Deletion Safety): Setting a pointer to nullptr
+    immediately after freeing its dynamic memory prevents accidental dangling pointer bugs.
+    5. Runtime Validation (Checking Validity):Allows conditional checks before dereferencing.
+
+[14] When do we need a pointer (instead of a reference or a named object)?
+    In C++, the general rule of thumb is: prefer named objects first,
+    references second, and pointers only when necessary. However, there are four key
+    scenarios where a pointer is specifically required over a reference or named object:
+    1. When Re-bind-ability Is Required (Changing What You Point To):
+        References: Once initialized, a reference (T&) is permanently bound to that specific object.
+            You cannot change a reference to alias a different variable later.
+        Pointers: A pointer (T*) can be reassigned at any time (e.g., ptr = &objA; ptr = &objB;).
+            This is essential for iterating through arrays, updating node links, or changing active
+            targets in a loop.
+
+    2. When Optionality / Absence Is Needed (nullptr):
+        References: Must always refer to a valid object upon creation.
+            There is no such thing as a "null reference" in valid C++.
+        Pointers: Can explicitly hold nullptr to represent an optional target,
+            an uninitialized state, or a missing resource (e.g., a search function returning "not found").
+
+    3. Managing Free Store (Heap) Memory & Polymorphism:
+        Dynamic heap allocations (new or raw memory blocks) return addresses, requiring pointers
+            (or smart pointers like std::unique_ptr / std::shared_ptr).
+        When storing collections of polymorphic objects (e.g., a list of mixed Shape derived
+            objects like Circle and Square), you must store base pointers (std::vector<Shape*>)
+            to prevent object slicing. Standard containers cannot hold raw references
+            (std::vector<Shape&> is invalid).
+
+    4. Building Pointer-Based Data Structures & Hardware Interfaces:
+        Node Graphs & Linked Lists: Linked structures (trees, graphs,
+            keyframe pose graphs in SLAM) require nodes to store pointers to child/parent nodes
+            because nodes are constructed dynamically and pointers must be re-bindable and nullable.
+        Embedded Memory-Mapped I/O: Interfacing directly with specific physical hardware addresses
+        (e.g., MCU register maps or DMA buffers) requires casting raw memory locations directly to
+        pointers (volatile uint32_t*).
+
+[15] What is a destructor? When do we want one?
+    A destructor is a special member function of a class that is automatically invoked when an object
+    of that class is destroyed (e.g., when it goes out of scope or when delete is called on a pointer to it).
+    Syntax: It has the exact same name as the class, preceded by a tilde (~), takes no parameters, and has no
+    return type (e.g., ~Vector()).
+    Automatic Execution: You almost never call a destructor explicitly; C++ automatically executes it when an
+    object reaches the end of its lifetime.
+
+[16] When do we want a virtual destructor?
+    You want a virtual destructor whenever a class is intended to serve as a base class in a polymorphic
+    hierarchy where derived objects will be deleted through a base class pointer.
+
+    If you delete a derived object through a base pointer (Base* p = new Derived(); delete p;)
+    when the base class destructor is not virtual, C++ uses static binding:
+        Only Base::~Base() is called.
+        Derived::~Derived() is completely skipped.
+
+    Any resources allocated by the derived class (heap memory, dynamic point clouds, file handles, open sockets)
+    will be silently leaked, and the object is improperly destroyed.
+
+    Golden Rule: If a class has ANY virtual functions, it MUST have a virtual destructor.
+
+[17] How are destructors for members called?
+    Destructors for member variables are called automatically in reverse order of their
+    declaration in the class definition.
+
+    When an object goes out of scope or is deleted via delete, C++ executes destruction in a strict,
+    predictable 3-step sequence:
+
+    1. Class Destructor Body: The code inside the object's own destructor (e.g., ~MyClass() { ... }) runs first.
+    2. Member Destructors (In Reverse Order): The destructors for all non-static member variables are called
+    automatically, starting with the last declared member and moving up to the first.
+    3. Base Class Destructors: Finally, base class destructors are called (also in reverse order of inheritance).
+
+    class Sensor {
+    public:
+        std::string name; // Member 1
+        Vector data;      // Member 2
+
+        ~Sensor() {
+            // Step 1: Sensor's own destructor body runs
+            std::cout << "Cleaning up Sensor\n";
+        }re45
+        // Step 2: data.~Vector() runs next (Member 2)
+        // Step 3: name.~string() runs last (Member 1)
+    };
+
+[18] How do we access a member of a class through a pointer?
+    There are two ways to access a member of a class through a pointer:
+    using the arrow operator (->) or combining the dereference operator with the dot operator
+    ((*ptr).member).
+
+    1. The Arrow Operator (->) — Standard & Preferred
+    Shape* shape = new Circle();
+    shape->draw(); // Calls draw() on the pointed-to object
+
+    2. Explicit Dereference and Dot Operator ((*ptr).member)
+    (*shape).draw(); // Equivalent to shape->draw()
+
+[19] What is a doubly-linked list?
+    A doubly-linked list is a dynamic data structure composed of nodes,
+    where each node contains three distinct parts:
+        1. Data: The actual value or object stored in the node.
+        2. Next Pointer (next): A pointer to the next node in the sequence.
+        3. Previous Pointer (prev): A pointer to the preceding node in the sequence.
+    Key Advantages Over a Singly-Linked List:
+        Bidirectional Traversal: You can traverse the list efficiently in both directions (forward and backward).
+        O(1) Arbitrary Deletions/Insertions: If you already have a pointer to a specific node,
+        you can remove or insert adjacent nodes in constant time without needing to scan from
+        the head to find the predecessor.
+
+[20] What is 'this' and when do we need to use it?
+    'this' is a built-in, implicit pointer variable available inside non-static class member functions
+    that holds the memory address of the specific object instance calling the function.
+    Its type is ClassType* const.
+    When Do We Need to Use this?
+    1. Disambiguating Member Variables from Constructor/Method Parameters:
+        When parameter names match member variable names:
+        class Vector {
+            int size;
+        public:
+            Vector(int size) {
+                this->size = size; // "this->size" is the member; "size" is the parameter
+            }
+        };
+    2. Returning a Reference to the Current Object (Method Chaining): Essential for overloading operators
+        like copy-assignment (operator=) or stream insertion (operator<<):
+        Matrix& operator=(const Matrix& other) {
+            // ... perform assignment ...
+            return *this; // Returns reference to current object
+        }
+    3. Self-Assignment Protection: Checking whether an object is being assigned to itself
+    (e.g., a = a;) before deallocating internal dynamic memory:
+        Matrix& operator=(const Matrix& other) {
+            if (this == &other) return *this; // Protects against self-assignment bugs
+            // ... free old memory and allocate new ...
+            return *this;
+        }
+    4. Passing the Current Object to External Functions: When a member function needs to pass a
+        pointer or reference to itself into an external helper routine or callback event loop
+        (e.g., register_callback(this);).
