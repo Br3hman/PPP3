@@ -25,7 +25,7 @@ Open a chapter's review file directly in the GitHub app or your browser for easy
 - [Chapter 8 review](chapter08/review.txt)
 - [Chapter 9 review](chapter09/review.text)
 - [Chapter 12 review](chapter12/review.txt)
-- [Chapter 15 review](chapter15/review.txt)
+- [Chapter 15 review](chapter15/review.md)
 
 Only chapters with an existing review file are listed.
 
