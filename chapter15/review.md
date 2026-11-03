@@ -1,12 +1,14 @@
 # Chapter 15 Review
 
 [1] Why do we need data structures with varying numbers of elements?
+
     We need data structures with varying numbers of elements that is
     dynamic data structures, likes std::vector or std::list, because
     the amount of data a program needs to process is rarely known at
     compile time and changes continuously while the program runs.
 
 [2] What four kinds of storage do we have for a typical program?
+
     A typical c++ program uses four distinct kind of memory storage
     to manage code, variables and dynamically requested resource:
     1. Code storage (Text segment / code segment)
@@ -34,6 +36,7 @@
 
 [3] What is the free store? What other name is commonly used for it?
 What operators support it?
+
     The free store is a pool of system memory available to a C++ program for
     dynamically allocating objects at runtime whose lifetimes are independent of
     the current function call stack.
@@ -103,6 +106,7 @@ What operators support it?
     As a result, evaluating var afterwards yields 20.
 
 [6] What is an address? How are memory addresses manipulated in C++?
+
     An address is an integer value (typically represented in hexadecimal format,
     such as 0x7ffc82a1b4c0) that identifies a specific byte location in computer memory (RAM)
     Byte Addressing: Computer memory is organized as a giant contiguous sequence of single-byte
@@ -132,6 +136,7 @@ What operators support it?
 
 [7] What information about a pointed-to object does a pointer have?
 What useful information does it lack?
+
     A raw pointer in c++ is a lightweight variables holding a single memory address,
     which determines both what it knows and what vital information it lacks.
     What Information a Pointer has
@@ -166,6 +171,7 @@ What useful information does it lack?
 
 
 [8] What can a pointer point to?
+
     1. A pointer can point to "Nothing" that is a nullptr to indicate that it
         is currently target no valid object.
     2. A pointer can point to variables on stack (Automatic storage) containing addresses
@@ -184,11 +190,13 @@ What useful information does it lack?
         mapped to micro controller hardware registers (e.g., volatile uint32_t* GPIO_PORTA = (uint32_t*)0x40020000;).
 
 [9] What is a leak?
+
     A memory leak occurs when memory is allocated on the free store (heap) using new (or malloc),
     but the program fails to release that memory back to the system when it is no longer needed
     and all pointers referencing that memory are lost.
 
 [10] What is a resource?
+
     In computing resources within a system are the asset with limited
     availability that a program must acquire before using and must
     release back to the system when finish using it.
@@ -200,9 +208,11 @@ What useful information does it lack?
         Resource are automatically released in the class destructor
 
 [11] What is another term for “free store”?
+
     Heap Storage ( coming for C programer)
 
 [12] How can we initialize a pointer?
+
     We should use nullptr to initialize a pointer,
     using NULL or 0 are bad habit or a really bad respectivly,
     or we should initialize with an address of an object we want to
@@ -233,6 +243,7 @@ What useful information does it lack?
     address, dynamic memory, or nullptr.
 
 [13] What is a null pointer? When do we need to use one?
+
     A null pointer a special Pointer, it has a distinct type
     (std::nullptr_t) that avoids signature ambiguity when calling overloaded functions.
 
@@ -249,6 +260,7 @@ What useful information does it lack?
     5. Runtime Validation (Checking Validity):Allows conditional checks before dereferencing.
 
 [14] When do we need a pointer (instead of a reference or a named object)?
+
     In C++, the general rule of thumb is: prefer named objects first,
     references second, and pointers only when necessary. However, there are four key
     scenarios where a pointer is specifically required over a reference or named object:
@@ -282,6 +294,7 @@ What useful information does it lack?
         pointers (volatile uint32_t*).
 
 [15] What is a destructor? When do we want one?
+
     A destructor is a special member function of a class that is automatically invoked when an object
     of that class is destroyed (e.g., when it goes out of scope or when delete is called on a pointer to it).
     Syntax: It has the exact same name as the class, preceded by a tilde (~), takes no parameters, and has no
@@ -290,6 +303,7 @@ What useful information does it lack?
     object reaches the end of its lifetime.
 
 [16] When do we want a virtual destructor?
+
     You want a virtual destructor whenever a class is intended to serve as a base class in a polymorphic
     hierarchy where derived objects will be deleted through a base class pointer.
 
@@ -304,6 +318,7 @@ What useful information does it lack?
     Golden Rule: If a class has ANY virtual functions, it MUST have a virtual destructor.
 
 [17] How are destructors for members called?
+
     Destructors for member variables are called automatically in reverse order of their
     declaration in the class definition.
 
@@ -329,6 +344,7 @@ What useful information does it lack?
     };
 
 [18] How do we access a member of a class through a pointer?
+
     There are two ways to access a member of a class through a pointer:
     using the arrow operator (->) or combining the dereference operator with the dot operator
     ((*ptr).member).
@@ -341,6 +357,7 @@ What useful information does it lack?
     (*shape).draw(); // Equivalent to shape->draw()
 
 [19] What is a doubly-linked list?
+
     A doubly-linked list is a dynamic data structure composed of nodes,
     where each node contains three distinct parts:
         1. Data: The actual value or object stored in the node.
@@ -353,6 +370,7 @@ What useful information does it lack?
         the head to find the predecessor.
 
 [20] What is 'this' and when do we need to use it?
+
     'this' is a built-in, implicit pointer variable available inside non-static class member functions
     that holds the memory address of the specific object instance calling the function.
     Its type is ClassType* const.
